@@ -504,6 +504,21 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 }
 
 
+//Gridを表示
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
+	const float GRID_HALF_WIDTH = 2.0f;
+	const uint32_t SUB_DEVISION= 10;
+
+	const float GRID_EVERY = (GRID_HALF_WIDTH * 2.0f) / float(SUB_DEVISION);
+	//奥から手前への線を順々に引いてくる
+	for (uint32_t xIndex = 0; xIndex <= SUB_DEVISION; ++xIndex) {
+
+	}
+
+}
+
+
+
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {
 	Novice::ScreenPrintf(x + COLUMN_WIDTH * 0, y, "%6.02f", vector.x);
 	Novice::ScreenPrintf(x + COLUMN_WIDTH * 1, y, "%6.02f", vector.y);
