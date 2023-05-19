@@ -76,7 +76,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			rotate.y -= 0.05f;
 		}
 
-
 		
 
 		//レンダリングパイプライン(グラフィックスパイプライン)の流れ
