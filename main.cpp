@@ -4,7 +4,7 @@
 #include <cstdint>
 
 
-const char kWindowTitle[] = "LE2B_26_モギ_ツバサ_MT3_01_01_確認課題";
+const char kWindowTitle[] = "LE2B_26_モギ_ツバサ_MT3_-_-_確認課題";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
