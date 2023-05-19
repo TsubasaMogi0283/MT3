@@ -425,7 +425,7 @@ float Cot(float theta) {
 	return (1.0f / tan(theta));
 }
 
-
+//正射影行列
 Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float neaCrlip, float farClip) {
 	Matrix4x4 result = {};
 	result.m[0][0] = 2.0f /( right - left);
@@ -450,7 +450,7 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 
 	return result;
 }
-
+//透視投影行列(正規化する)
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 	Matrix4x4 result = {};
 	float theta = fovY / 2.0f;
@@ -477,7 +477,7 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 
 	return result;
 }
-
+//スクリーンへ
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
 	Matrix4x4 result;
 	result.m[0][0] = width / 2;
