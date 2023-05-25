@@ -37,6 +37,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vector3 localCoodinate = { 0.0f,0.0f,0.0f };
 
+
+
+	Sphere sphere = { localCoodinate,1.0f };
+
+
+
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -94,7 +100,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//DrawGrid(const Matrix4x4 & viewProjectionMatrix, const Matrix4x4 & viewportMatrix);
 		DrawGrid(viewMatrix,projectionMatrix, viewportMatrix);
 
-
+		DrawSphre(sphere, viewMatrix, projectionMatrix, viewportMatrix, BLUE);
 
 
 

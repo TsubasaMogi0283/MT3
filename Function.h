@@ -52,3 +52,11 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4 matrix, const char* string
 #pragma endregion
 
 void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+
+struct Sphere {
+	Vector3 center;
+	float radius;
+};
+
+void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour);
+

@@ -1,7 +1,9 @@
 #include <Function.h>
 #include <cassert>
 #include <Novice.h>
+#define _USE_MATH_DEFINES
 #include <cmath>
+#include  <math.h>
 
 #include <Vector2.h>
 
@@ -518,11 +520,11 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 
 
 
-	Vector3 LocalVertices = {};
+	Vector3 LocalVertices[10] = {};
 	Vector3 ScreenVertices = {};
-	Matrix4x4 WorldMatrix = {};
+	Matrix4x4 WorldMatrix[10] = {};
 	Vector3 ndcVertices = {};
-
+	Vector3 screenVertices[10] = {};
 
 	//奥から手前への線を順々に引いてくる(縦)
 	for (int  xIndex = 0; xIndex < 1; ++xIndex) {
@@ -530,9 +532,9 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 		
 
 		
-		LocalVertices.x = xIndex * GRID_HALF_WIDTH;
-		LocalVertices.y = 0.0f;
-		LocalVertices.z = 0.0f;
+		LocalVertices[xIndex].x = xIndex * GRID_HALF_WIDTH;
+		LocalVertices[xIndex].y = float(xIndex);
+		LocalVertices[xIndex].z = 0.0f;
 
 		//ローカル座標系
 		//      ↓			(WorldMatrix)
@@ -545,15 +547,17 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 		//スクリーン座標系
 
 		
-		WorldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 1.0f,1.0f,1.0f }, LocalVertices);
+		WorldMatrix[xIndex] = MakeAffineMatrix({1.0f,1.0f,1.0f}, {1.0f,1.0f,1.0f}, LocalVertices[xIndex]);
 
 
 		
 		////ワールドへ
-		Matrix4x4 worldViewProjectionMatrix = Multiply(WorldMatrix, Multiply(viewMatrix, viewProjectionMatrix));
+		Matrix4x4 worldViewProjectionMatrix = Multiply(WorldMatrix[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
 
-		ndcVertices = Transform(LocalVertices, viewProjectionMatrix);
-		ScreenVertices = Transform(ndcVertices, viewportMatrix);
+
+		ndcVertices = Transform(LocalVertices[xIndex], worldViewProjectionMatrix);
+		screenVertices[xIndex] = Transform(ndcVertices, viewportMatrix);
+		
 
 		////計算
 		////ワールドへ
@@ -575,16 +579,19 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 		//Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
 
 
+		//ndcVertices = Transform(LocalVertices, viewProjectionMatrix);
+		//ScreenVertices = Transform(ndcVertices, viewportMatrix);
+
 		//スクリーン座標系まで変換をかける
 
 		//変換した座標を使って表示
 
 		Novice::DrawLine(
-			int(.x),
-			int(.y),
-			int(.x),
-			int(.y+GRID_EVERY),
-			0xAAAAAAFF);
+			int(screenVertices[xIndex].x),
+			int(screenVertices[xIndex].y),
+			int(screenVertices[xIndex].x),
+			int(screenVertices[xIndex].y+GRID_EVERY),
+			RED);
 
 	}
 	//左から右も同じように順々に引いていく(横)
@@ -593,9 +600,51 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 
 	}
 
+
+	Novice::ScreenPrintf(0, 0, "%d,%d", screenVertices[0].x, screenVertices[0].y);
+
 }
 
+//Sphreを表示
+void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour) {
+	const uint32_t SUBDIVISION = 10;
+	const float LON_EVERY = M_PI/3;
+	const float LAT_EVERY = M_PI/3;
 
+	for (uint32_t latIndex = 0; latIndex < SUBDIVISION; ++latIndex) {
+		//現在の緯度
+		float lat = -M_PI / 2.0f + LAT_EVERY * latIndex;
+		for (uint32_t lonIndex = 0; lonIndex < SUBDIVISION; ++lonIndex) {
+			//現在の軽度
+			float lon = lonIndex * LON_EVERY;
+
+			//world座標でのabcを求める
+			Vector3 a, b, c;
+			Matrix4x4 WorldMatrixA = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},a );
+			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
+			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
+
+		//
+		////ビュー(カメラ)
+		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+		//
+		
+		////ワールドへ
+		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
+		
+		
+
+
+		}
+
+
+
+	}
+
+
+	
+}
 
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {
 	Novice::ScreenPrintf(x + COLUMN_WIDTH * 0, y, "%6.02f", vector.x);
