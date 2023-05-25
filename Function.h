@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Matrix4x4.h>
 #include <Vector3.h>
 
@@ -51,4 +51,4 @@ const int ROW_HEIGHT = 20;
 void MatrixScreenPrintf(int x, int y, const Matrix4x4 matrix, const char* string);
 #pragma endregion
 
-void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);

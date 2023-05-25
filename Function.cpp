@@ -505,7 +505,7 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 
 
 //Gridを表示
-void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
+void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	//Gridの半分の幅
 	const float GRID_HALF_WIDTH = 2.0f;
 	
@@ -521,7 +521,7 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 	Vector3 LocalVertices = {};
 	Vector3 ScreenVertices = {};
 	Matrix4x4 WorldMatrix = {};
-
+	Vector3 ndcVertices = {};
 
 
 	//奥から手前への線を順々に引いてくる(縦)
@@ -548,16 +548,11 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 		WorldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 1.0f,1.0f,1.0f }, LocalVertices);
 
 
-		//viewProjectionMatrix
-		
-		//viewProjectionMatrix=Multiply(returnWorldMatrix, Multiply(viewMatrix, projectionMatrix));
-
-
 		
 		////ワールドへ
-		//Matrix4x4 worldViewProjectionMatrix = Multiply(WorldMatrix, Multiply(viewMatrix, projectionMatrix));
+		Matrix4x4 worldViewProjectionMatrix = Multiply(WorldMatrix, Multiply(viewMatrix, viewProjectionMatrix));
 
-		Vector3 ndcVertices = Transform(LocalVertices, viewProjectionMatrix);
+		ndcVertices = Transform(LocalVertices, viewProjectionMatrix);
 		ScreenVertices = Transform(ndcVertices, viewportMatrix);
 
 		////計算
@@ -569,6 +564,8 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 		////ビュー(カメラ)
 		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
 		//
+		 
+		
 		////射影
 		//Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WINDOW_SIZE_WIDTH) / float(WINDOW_SIZE_HEIGHT), 0.1f, 100.0f);
 		//
@@ -583,10 +580,10 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 		//変換した座標を使って表示
 
 		Novice::DrawLine(
-			int(ScreenVertices.x),
-			int(ScreenVertices.y),
-			int(ScreenVertices.x),
-			int(ScreenVertices.y+GRID_EVERY),
+			int(.x),
+			int(.y),
+			int(.x),
+			int(.y+GRID_EVERY),
 			0xAAAAAAFF);
 
 	}
