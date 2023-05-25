@@ -624,16 +624,17 @@ void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4
 			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
 			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
 
-		//
-		////ビュー(カメラ)
-		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		//
+		
 		
 		////ワールドへ
 		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 		Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
 		
-		
+
+		ndcVertices = Transform(LocalVertices, viewProjectionMatrix);
+		ScreenVertices = Transform(ndcVertices, viewportMatrix);
 
 
 		}
