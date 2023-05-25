@@ -1,4 +1,4 @@
-﻿#include <Function.h>
+#include <Function.h>
 #include <cassert>
 #include <Novice.h>
 #include <cmath>
@@ -7,7 +7,7 @@
 
 //Scale
 Matrix4x4 MakeScaleMatrix(const Vector3 scale) {
-	Matrix4x4 result;
+	Matrix4x4 result = {};
 	result.m[0][0] = scale.x;
 	result.m[0][1] = 0.0f;
 	result.m[0][2] = 0.0f;
@@ -35,7 +35,7 @@ Matrix4x4 MakeScaleMatrix(const Vector3 scale) {
 
 //Rotate
 Matrix4x4 MakeRotateXMatrix(float radian) {
-	Matrix4x4 result;
+	Matrix4x4 result = {};
 
 	result.m[0][0] = 1.0f;
 	result.m[0][1] = 0.0f;
@@ -61,7 +61,7 @@ Matrix4x4 MakeRotateXMatrix(float radian) {
 }
 
 Matrix4x4 MakeRotateYMatrix(float radian) {
-	Matrix4x4 result;
+	Matrix4x4 result = {};
 
 	result.m[0][0] = std::cos(radian);
 	result.m[0][1] = 0.0f;
@@ -87,7 +87,7 @@ Matrix4x4 MakeRotateYMatrix(float radian) {
 }
 
 Matrix4x4 MakeRotateZMatrix(float radian) {
-	Matrix4x4 result;
+	Matrix4x4 result = {};
 
 	result.m[0][0] = std::cos(radian);
 	result.m[0][1] = std::sin(radian);
@@ -131,7 +131,7 @@ Matrix4x4 MakeRotateXYZMatrix(float radianX, float radianY, float radianZ) {
 
 
 Matrix4x4 Multiply(const Matrix4x4 m1, const Matrix4x4 m2) {
-	Matrix4x4 result;
+	Matrix4x4 result = {};
 	result.m[0][0] = (m1.m[0][0] * m2.m[0][0]) + (m1.m[0][1] * m2.m[1][0]) + (m1.m[0][2] * m2.m[2][0]) + (m1.m[0][3] * m2.m[3][0]);
 	result.m[0][1] = (m1.m[0][0] * m2.m[0][1]) + (m1.m[0][1] * m2.m[1][1]) + (m1.m[0][2] * m2.m[2][1]) + (m1.m[0][3] * m2.m[3][1]);
 	result.m[0][2] = (m1.m[0][0] * m2.m[0][2]) + (m1.m[0][1] * m2.m[1][2]) + (m1.m[0][2] * m2.m[2][2]) + (m1.m[0][3] * m2.m[3][2]);
@@ -162,7 +162,7 @@ Matrix4x4 Multiply(const Matrix4x4 m1, const Matrix4x4 m2) {
 
 //Translate
 Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
-	Matrix4x4 result;
+	Matrix4x4 result = {};
 	result.m[0][0] = 1.0f;
 	result.m[0][1] = 0.0f;
 	result.m[0][2] = 0.0f;
@@ -191,7 +191,7 @@ Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
 
 //Transform
 Vector3 Transform(const Vector3 vector, const Matrix4x4 matrix) {
-	Vector3 result;
+	Vector3 result = {};
 
 	result.x = (vector.x * matrix.m[0][0]) + (vector.y * matrix.m[1][0]) + (vector.z * matrix.m[2][0]) + (1.0f * matrix.m[3][0]);
 	result.y = (vector.x * matrix.m[0][1]) + (vector.y * matrix.m[1][1]) + (vector.z * matrix.m[2][1]) + (1.0f * matrix.m[3][1]);
@@ -479,7 +479,7 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 }
 //スクリーンへ
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
-	Matrix4x4 result;
+	Matrix4x4 result = {};
 	result.m[0][0] = width / 2;
 	result.m[0][1] = 0;
 	result.m[0][2] = 0;
@@ -506,12 +506,93 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 
 //Gridを表示
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
+	//Gridの半分の幅
 	const float GRID_HALF_WIDTH = 2.0f;
-	const uint32_t SUB_DEVISION= 10;
+	
+	//分割数
+	const uint32_t SUB_DEVISION = 10;
 
+	//一つ分の長さ
 	const float GRID_EVERY = (GRID_HALF_WIDTH * 2.0f) / float(SUB_DEVISION);
-	//奥から手前への線を順々に引いてくる
-	for (uint32_t xIndex = 0; xIndex <= SUB_DEVISION; ++xIndex) {
+
+
+
+
+	Vector3 LocalVertices = {};
+	Vector3 ScreenVertices = {};
+	Matrix4x4 WorldMatrix = {};
+
+
+
+	//奥から手前への線を順々に引いてくる(縦)
+	for (int  xIndex = 0; xIndex < 1; ++xIndex) {
+		//上の情報を使ってワールド座標上の始点と終点を求める
+		
+
+		
+		LocalVertices.x = xIndex * GRID_HALF_WIDTH;
+		LocalVertices.y = 0.0f;
+		LocalVertices.z = 0.0f;
+
+		//ローカル座標系
+		//      ↓			(WorldMatrix)
+		//ワールド座標系
+		//      ↓			(ViewMatrix(Inverse))
+		//ビュー座標系
+		//      ↓			(Projection)
+		//正規化デバイス座標系
+		//      ↓
+		//スクリーン座標系
+
+		
+		WorldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 1.0f,1.0f,1.0f }, LocalVertices);
+
+
+		//viewProjectionMatrix
+		
+		//viewProjectionMatrix=Multiply(returnWorldMatrix, Multiply(viewMatrix, projectionMatrix));
+
+
+		
+		////ワールドへ
+		//Matrix4x4 worldViewProjectionMatrix = Multiply(WorldMatrix, Multiply(viewMatrix, projectionMatrix));
+
+		Vector3 ndcVertices = Transform(LocalVertices, viewProjectionMatrix);
+		ScreenVertices = Transform(ndcVertices, viewportMatrix);
+
+		////計算
+		////ワールドへ
+		//Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, localCoodinate);
+		//
+		//Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
+		//
+		////ビュー(カメラ)
+		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+		//
+		////射影
+		//Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WINDOW_SIZE_WIDTH) / float(WINDOW_SIZE_HEIGHT), 0.1f, 100.0f);
+		//
+		////ワールドへ
+		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+		////ビューポート
+		//Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
+
+
+		//スクリーン座標系まで変換をかける
+
+		//変換した座標を使って表示
+
+		Novice::DrawLine(
+			int(ScreenVertices.x),
+			int(ScreenVertices.y),
+			int(ScreenVertices.x),
+			int(ScreenVertices.y+GRID_EVERY),
+			0xAAAAAAFF);
+
+	}
+	//左から右も同じように順々に引いていく(横)
+	for (uint32_t zIndex = 0; zIndex <= SUB_DEVISION; ++zIndex) {
+		//奥から手前が左右に変わるだけ
 
 	}
 
