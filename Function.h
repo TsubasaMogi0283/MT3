@@ -5,6 +5,15 @@
 const int WINDOW_SIZE_WIDTH = 1280;
 const int WINDOW_SIZE_HEIGHT = 720;
 
+//四則計算
+Vector3 Subtract(const Vector3 m1, const Vector3 m2);
+
+
+
+
+
+
+
 
 //Scale
 Matrix4x4 MakeScaleMatrix(const Vector3 scale);
@@ -59,4 +68,90 @@ struct Sphere {
 };
 
 void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour);
+
+
+//直線
+struct Line {
+	//始点
+	Vector3 origin;
+	//終点への差分ベクトル
+	Vector3 diff;
+
+};
+
+//半直線
+struct Ray {
+	//始点
+	Vector3 origin;
+	//終点への差分ベクトル
+	Vector3 diff;
+
+};
+
+//線分
+struct Segment {
+	//始点
+	Vector3 origin;
+	//終点への差分ベクトル
+	Vector3 diff;
+
+};
+
+
+float Clamp(float t, float min, float max) {
+	if (t < min) {
+		return min;
+	}
+	else if (t > max) {
+		return max;
+	}
+
+	return t;
+
+
+}
+
+
+
+float Dot(Vector3 v1, Vector3 v2, Vector3 v3);
+float Length(Vector3 V1);
+Vector3 Normalize(Vector3 V1);
+
+
+
+
+bool CapsuleCollision() {
+	
+	//川(カプセル)
+	//RiverVectorD.x = PlayerCenterPosition.x - RiverCapsuleA.x;
+	//RiverVectorD.y = PlayerCenterPosition.y - RiverCapsuleA.y;
+	//
+	//RiverVectorBA.x = RiverCapsuleB.x - RiverCapsuleA.x;
+	//RiverVectorBA.y = RiverCapsuleB.y - RiverCapsuleA.y;
+	//
+	////BAを正規化
+	//RiverVectorE = Normalize(RiverVectorBA);
+	//
+	////tの値を求める。dotは内積
+	////lengthはベクトルの長さを求める
+	//float t = Dot(RiverVectorD, RiverVectorE) / Length(RiverVectorBA);
+	//
+	////clampを使用
+	//t = Clamp(t, 0.0f, 1.0f);
+	//
+	////線形補間
+	//RiverVectorF.x = (1.0f - t) * RiverCapsuleA.x + t * RiverCapsuleB.x;
+	//RiverVectorF.y = (1.0f - t) * RiverCapsuleA.y + t * RiverCapsuleB.y;
+	//
+	////距離を求める
+	//RiverDistance.x = PlayerCenterPosition.x - RiverVectorF.x;
+	//RiverDistance.y = PlayerCenterPosition.y - RiverVectorF.y;
+	//
+	//riverDistance = sqrtf(RiverDistance.x * RiverDistance.x + RiverDistance.y * RiverDistance.y);
+	//
+	//
+	//RiverNewCoodinate.x = RiverCoodinate.x - WorldScrollAmount.x;
+	//RiverNewCoodinate.y = RiverCoodinate.y - WorldScrollAmount.y;
+
+}
 

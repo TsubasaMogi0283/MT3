@@ -7,6 +7,24 @@
 
 #include <Vector2.h>
 
+
+Vector3 Subtract(const Vector3 m1, const Vector3 m2) {
+	Vector3 result = {};
+
+	result.x = m1.x - m2.x;
+	result.y = m1.y - m2.y;
+	result.z = m1.z - m2.z;
+
+	return result;
+
+}
+
+
+
+
+
+
+
 //Scale
 Matrix4x4 MakeScaleMatrix(const Vector3 scale) {
 	Matrix4x4 result = {};
@@ -650,6 +668,149 @@ void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4
 
 	
 }
+
+
+
+
+
+float Clamp(float t, float min, float max) {
+	if (t < min) {
+		return min;
+	}
+	else if (t > max) {
+		return max;
+	}
+
+	return t;
+
+
+}
+
+
+
+float Dot(Vector3 v1, Vector3 v2 ,Vector3 v3) {
+	return v1.x * v2.x* v3.x + v1.y * v2.y* v3.y + v1.z * v2.z* v3.z;
+}
+
+float Length(Vector3 V1) {
+	return sqrt(V1.x * V1.x + V1.y * V1.y+ V1.z * V1.z);
+}
+
+Vector3 Normalize(Vector3 V1) {
+	Vector3 result = {};
+
+	float length = sqrt(V1.x * V1.x + V1.y * V1.y+V1.z*V1.z);
+
+	float newX = V1.x;
+	float newY = V1.y;
+	float newZ = V1.z;
+
+
+	if (length != 0.0f) {
+		newX = V1.x / length;
+		newY = V1.y / length;
+		newZ = V1.z / length;
+
+	}
+
+	result.x = newX;
+	result.y = newY;
+	result.z = newZ;
+
+
+	return result;
+}
+
+
+
+
+bool CapsuleCollision(Vector3 playerCenterPosition,Vector3 capsuleRadius) {
+	
+	//Vector2 RiverCapsuleRadius = { 50.0f,50.0f };
+	//Vector2 RiverCapsuleA = {180.0f,RiverCapsuleRadius .y};
+	//Vector2 RiverCapsuleB = { RiverCapsuleRadius.x,360.0f};
+	////Vector2 RiverVectorC(Playerだよ)
+	//Vector2	RiverVectorD = {0.0f,0.0f};
+	//Vector2 RiverVectorE = { 0.0f,0.0f };
+	//Vector2 RiverVectorF = { 0.0f,0.0f };
+	//
+	//Vector2 RiverVectorBA = { 0.0f,0.0f };
+	//Vector2 RiverDistance = { 0.0f,0.0f };
+	//float riverDistance = 0.0f;
+	//const float RIVER_SOUND_INTERVAL = 30.0f;
+	//
+	//Vector2 RiverCoodinate = { 0.0f,0.0f };
+	//Vector2 RiverNewCoodinate = { 0.0f,0.0f };
+
+
+
+	//^...正規化したやつ
+	//カプセル
+	Vector3 CapsuleA = {};
+	Vector3 CapsuleB = {};
+
+	Vector3 CapsuleBA = {};
+
+	Vector3 NormalizeVector3 = {};
+
+
+	//Playerなど
+	Vector3 VectorP = {};
+
+	Vector3 VectorD = {};
+
+	//計算用
+
+	
+
+	//計算
+	VectorD = Subtract(playerCenterPosition, CapsuleA);
+	CapsuleBA = Subtract(CapsuleB, CapsuleA);
+
+	NormalizeVector3 = Normalize(CapsuleBA);
+
+
+	float t = Dot(VectorD, NormalizeVector3) / Length(NormalizeVector3);
+
+	//カプセル
+	//RiverVectorD.x = PlayerCenterPosition.x - RiverCapsuleA.x;
+	//RiverVectorD.y = PlayerCenterPosition.y - RiverCapsuleA.y;
+	//
+	//RiverVectorBA.x = RiverCapsuleB.x - RiverCapsuleA.x;
+	//RiverVectorBA.y = RiverCapsuleB.y - RiverCapsuleA.y;
+	//
+	////BAを正規化
+	//RiverVectorE = Normalize(RiverVectorBA);
+	//
+	// 
+	// 
+	// 
+	////tの値を求める。dotは内積
+	////lengthはベクトルの長さを求める
+	//float t = Dot(RiverVectorD, RiverVectorE) / Length(RiverVectorBA);
+	//
+	////clampを使用
+	//t = Clamp(t, 0.0f, 1.0f);
+	//
+	////線形補間
+	//RiverVectorF.x = (1.0f - t) * RiverCapsuleA.x + t * RiverCapsuleB.x;
+	//RiverVectorF.y = (1.0f - t) * RiverCapsuleA.y + t * RiverCapsuleB.y;
+	//
+	////距離を求める
+	//RiverDistance.x = PlayerCenterPosition.x - RiverVectorF.x;
+	//RiverDistance.y = PlayerCenterPosition.y - RiverVectorF.y;
+	//
+	//riverDistance = sqrtf(RiverDistance.x * RiverDistance.x + RiverDistance.y * RiverDistance.y);
+	//
+	//
+	//RiverNewCoodinate.x = RiverCoodinate.x - WorldScrollAmount.x;
+	//RiverNewCoodinate.y = RiverCoodinate.y - WorldScrollAmount.y;
+
+}
+
+
+
+
 
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {
 	Novice::ScreenPrintf(x + COLUMN_WIDTH * 0, y, "%6.02f", vector.x);
