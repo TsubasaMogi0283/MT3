@@ -2,7 +2,7 @@
 #include <Function.h>
 #include <Vector3.h>
 #include <cstdint>
-
+#include <imgui.h>
 
 const char kWindowTitle[] = "LE2B_26_モギ_ツバサ_MT3_01_02_確認課題";
 
@@ -129,8 +129,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//	screenVertices[i] = Transform(ndcVertices, viewportMatrix);
 		//}
 
+		ImGui::Begin("Window");
+		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x,0.01f);
 		
-
+		ImGui::End();
 
 		///
 		/// ↑描画処理ここまで
