@@ -35,13 +35,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	LocalVertics[1] = {0.2f,0.0f,0.0f};
 	
 
-	Vector3 localCoodinate = { 0.0f,0.0f,0.0f };
+	Vector3 localCoodinate = { 0.1f,0.1f,0.1f };
+	Vector3 SphreRadius = { 0.5f,0.5f,0.5f };
+	Vector3 SphreOrigin = {};
 
-
-
+	//球
 	Sphere sphere = { localCoodinate,1.0f };
 
-
+	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -77,7 +78,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//      ↓
 		//スクリーン座標系
 
-
+		\
 
 		//計算
 		Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
@@ -104,30 +105,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-		////計算
-		////ワールドへ
-		//Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, localCoodinate);
-		//
-		//Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
-		//
-		////ビュー(カメラ)
-		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		//
-		////射影
-		//Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WINDOW_SIZE_WIDTH) / float(WINDOW_SIZE_HEIGHT), 0.1f, 100.0f);
-		//
-		////ワールドへ
-		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-		////ビューポート
-		//Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
-
-
 		
 		//Vector3 screenVertices[3] = {};
 		//for (uint32_t i = 0; i < 3; i++) {
 		//	Vector3 ndcVertices = Transform(LocalVertics[i], worldViewProjectionMatrix);
 		//	screenVertices[i] = Transform(ndcVertices, viewportMatrix);
 		//}
+		Novice
+
+
+
 
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x,0.01f);
