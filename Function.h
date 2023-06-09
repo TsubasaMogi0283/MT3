@@ -67,7 +67,7 @@ struct Sphere {
 	float radius;
 };
 
-void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour);
+//void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour);
 
 
 //直線
@@ -118,6 +118,7 @@ float Length(Vector3 V1);
 Vector3 Normalize(Vector3 V1);
 
 
+Vector3 Project(const Vector3& v1, const Vector3& v2);
 
 
 bool CapsuleCollision() {

@@ -624,50 +624,50 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 }
 
 //Sphreを表示
-void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour) {
-	const uint32_t SUBDIVISION = 10;
-	const float LON_EVERY = M_PI/3.0f;
-	const float LAT_EVERY = M_PI/3.0f;
-
-	Vector3 LocalVertices[10] = {};
-	Vector3 ndcVertices = {};
-	Vector3 screenVertices[10] = {};
-
-	for (uint32_t latIndex = 0; latIndex < SUBDIVISION; ++latIndex) {
-		//現在の緯度
-		float lat = -M_PI / 2.0f + LAT_EVERY * latIndex;
-		for (uint32_t lonIndex = 0; lonIndex < SUBDIVISION; ++lonIndex) {
-			//現在の軽度
-			float lon = lonIndex * LON_EVERY;
-
-			//world座標でのabcを求める
-			Vector3 a, b, c;
-			Matrix4x4 WorldMatrixA = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},a );
-			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
-			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
-
-		
-		
-			////ワールドへ
-			//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-			Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
-			Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
-			Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
-			
-
-			ndcVertices = Transform(LocalVertices[latIndex], viewProjectionMatrix);
-			screenVertices[latIndex] = Transform(ndcVertices, viewportMatrix);
-
-
-		}
-
-
-
-	}
-
-
-	
-}
+//void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour) {
+//	const uint32_t SUBDIVISION = 10;
+//	const float LON_EVERY = M_PI/3.0f;
+//	const float LAT_EVERY = M_PI/3.0f;
+//
+//	Vector3 LocalVertices[10] = {};
+//	Vector3 ndcVertices = {};
+//	Vector3 screenVertices[10] = {};
+//
+//	for (uint32_t latIndex = 0; latIndex < SUBDIVISION; ++latIndex) {
+//		//現在の緯度
+//		float lat = -M_PI / 2.0f + LAT_EVERY * latIndex;
+//		for (uint32_t lonIndex = 0; lonIndex < SUBDIVISION; ++lonIndex) {
+//			//現在の軽度
+//			float lon = lonIndex * LON_EVERY;
+//
+//			//world座標でのabcを求める
+//			Vector3 a, b, c;
+//			Matrix4x4 WorldMatrixA = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},a );
+//			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
+//			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
+//
+//		
+//		
+//			////ワールドへ
+//			//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+//			Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
+//			Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
+//			Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
+//			
+//
+//			ndcVertices = Transform(LocalVertices[latIndex], viewProjectionMatrix);
+//			screenVertices[latIndex] = Transform(ndcVertices, viewportMatrix);
+//
+//
+//		}
+//
+//
+//
+//	}
+//
+//
+//	
+//}
 
 
 
@@ -808,7 +808,9 @@ bool CapsuleCollision(Vector3 playerCenterPosition,Vector3 capsuleRadius) {
 
 }
 
+Vector3 Project(const Vector3& v1, const Vector3& v2) {
 
+}
 
 
 

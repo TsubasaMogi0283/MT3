@@ -100,7 +100,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//DrawGrid(const Matrix4x4 & viewProjectionMatrix, const Matrix4x4 & viewportMatrix);
 		DrawGrid(viewMatrix,projectionMatrix, viewportMatrix);
 
-		DrawSphre(sphere, viewMatrix, projectionMatrix, viewportMatrix, BLUE);
+		//DrawSphre(sphere, viewMatrix, projectionMatrix, viewportMatrix, BLUE);
 
 
 
