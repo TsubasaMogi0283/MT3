@@ -692,7 +692,7 @@ void DrawSphre(
 	const Matrix4x4& viewProjectionMatrix, 
 	const Matrix4x4& viewportMatrix, 
 	uint32_t colour) {
-	const uint32_t SUBDIVISION = 1;
+	const uint32_t SUBDIVISION = 3;
 	//theta
 	const float LON_EVERY = float(M_PI/3.0f);
 	//phi
@@ -701,7 +701,7 @@ void DrawSphre(
 	
 
 
-
+	//任意？
 	float theta = float(M_PI / 3.0f);
 	float phi = float(M_PI / 3.0f);
 
