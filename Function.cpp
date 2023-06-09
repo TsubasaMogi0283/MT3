@@ -510,7 +510,7 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 //Gridを表示
 void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	//Gridの半分の幅
-	const float GRID_HALF_WIDTH = 2.0f;
+	const float GRID_HALF_WIDTH = 1.0f;
 	
 	//分割数
 	const uint32_t SUB_DEVISION = 10;
@@ -615,6 +615,14 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 			int(screenVerticesEndColumn[xIndex].x),
 			int(screenVerticesEndColumn[xIndex].y),
 			RED);
+		
+		Novice::DrawLine(
+			int(screenVerticesStartColumn[0].x),
+			int(screenVerticesStartColumn[0].y),
+			int(screenVerticesEndColumn[0].x),
+			int(screenVerticesEndColumn[0].y),
+			BLUE);
+
 
 	}
 	//左から右も同じように順々に引いていく(横)
@@ -667,15 +675,24 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 
 		//変換した座標を使って表示
 
+		ImGui::Begin("Line[z]");
+		ImGui::DragFloat3("Grid-Z", &screenVerticesStartLine[zIndex].x,0.01f);
+		
+		ImGui::End();
+
 		Novice::DrawLine(
 			int(screenVerticesStartLine[zIndex].x),
 			int(screenVerticesStartLine[zIndex].y),
 			int(screenVerticesEndLine[zIndex].x),
 			int(screenVerticesEndLine[zIndex].y),
 			RED);
-
-
-
+		
+		Novice::DrawLine(
+			int(screenVerticesStartLine[0].x),
+			int(screenVerticesStartLine[0].y),
+			int(screenVerticesEndLine[0].x),
+			int(screenVerticesEndLine[0].y), BLUE);
+		
 
 
 
@@ -692,19 +709,15 @@ void DrawSphre(
 	const Matrix4x4& viewProjectionMatrix, 
 	const Matrix4x4& viewportMatrix, 
 	uint32_t colour) {
-	const uint32_t SUBDIVISION = 3;
-	//theta
-	const float LON_EVERY = float(M_PI/3.0f);
-	//phi
-	//const float LAT_EVERY = float(M_PI/3.0f);
+
+	//分割数
+	const uint32_t SUBDIVISION = 10;
+	//lat
+	const float LON_EVERY = float(M_PI/5.0f);
+	//lon
+	const float LAT_EVERY = float(M_PI/10.0f);
 
 	
-
-
-	//任意？
-	float theta = float(M_PI / 3.0f);
-	float phi = float(M_PI / 3.0f);
-
 
 	float thetaD = float(M_PI / SUBDIVISION);
 	float phiD = float(2.0f * M_PI / SUBDIVISION);
@@ -715,74 +728,203 @@ void DrawSphre(
 
 	Vector3 ndcVerticesA = {};
 	Vector3 ndcVerticesB = {};
+	Vector3 ndcVerticesC = {};
 
+	Vector3 ndcVerticesStart = {};
+	Vector3 ndcVerticesEnd = {};
 
-	Vector3 screenVerticesA[10] = {};
-	Vector3 screenVerticesB[10] = {};
+	Vector3 ndcVerticesXYStart = {};
+	Vector3 ndcVerticesXYEnd = {};
 
+	Vector3 screenVerticesA[SUBDIVISION] = {};
+	Vector3 screenVerticesB[SUBDIVISION] = {};
+	Vector3 screenVerticesC[SUBDIVISION] = {};
+
+	Vector3 screenVerticesStart[SUBDIVISION] = {};
+	Vector3 screenVerticesEnd[SUBDIVISION] = {};
+
+	Vector3 screenVerticesXYStart[SUBDIVISION] = {};
+	Vector3 screenVerticesXYEnd[SUBDIVISION] = {};
 
 
 	for (uint32_t latIndex = 0; latIndex < SUBDIVISION; ++latIndex) {
 		//現在の緯度
 		//θ
-		//float lat = float( - M_PI / 2.0f + LAT_EVERY * latIndex);
+		float lat = float( - M_PI / 2.0f + LAT_EVERY * latIndex);
 		for (uint32_t lonIndex = 0; lonIndex < SUBDIVISION; ++lonIndex) {
 			//現在の経度
 			//ファイ
 			float lon = lonIndex * LON_EVERY;
 
 			//world座標でのabcを求める
+			//acはxz平面(phi,lon)
+			//abがxy平面(theta,lat)
 			Vector3 a, b, c;
-			a = {cosf(theta) * cosf(lon),
-				sinf(theta),
-				cosf(theta+thetaD) * sinf(phi) 
+			
+			Vector3 HalfCircleStart,HalfCircleEnd;
+			Vector3 HarfCircleXYStart, HarfCircleXYEnd;
+
+			a = {sphere.radius*(cosf(lat) * cosf(lon)),
+				sphere.radius*(sinf(lat)),
+				sphere.radius*(cosf(lat) * sinf(lon)) 
 			};
 			
-			b = {cosf(theta+thetaD ) * cosf(phi),
-				sinf(theta +theta),
-				cosf(theta+thetaD) * sinf(phi)
+			b = {sphere.radius*(cosf(lat+thetaD ) * cosf(lon)),
+				sphere.radius*(sinf(lat +thetaD)),
+				sphere.radius*(cosf(lat+thetaD) * sinf(lon))
 			};
 			
-			c = { cosf(theta) * cosf(phi+phiD),
-				sinf(theta),
-				cosf(theta) * sinf(phi+phiD)
+			c = { sphere.radius*(cosf(lat) * cosf(lon+phiD)),
+				sphere.radius*(sinf(lat)),
+				sphere.radius*(cosf(lat) * sinf(lon+phiD))
 			};
+
+			
+
 
 			//ab,acに引くよ！
-
-
 			Matrix4x4 WorldMatrixA = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},a );
 			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
-			//Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
+			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
 
-		
-		
+
+
+			
 			////ワールドへ
 			//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 			Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
 			Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
-			//Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
 			
 
-			ndcVerticesA = Transform(sphere.center, viewProjectionMatrix);
-			ndcVerticesB = Transform(sphere.center, viewProjectionMatrix);
 
 
+
+			ndcVerticesA = Transform(a, worldViewProjectionMatrixA);
+			ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
+			ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
+			
+			
 
 
 			screenVerticesA[latIndex] = Transform(ndcVerticesA, viewportMatrix);
-			//経度
 			screenVerticesB[latIndex] = Transform(ndcVerticesB, viewportMatrix);
+			screenVerticesC[latIndex] = Transform(ndcVerticesC, viewportMatrix);
 
+
+
+			//ab
+			Novice::DrawLine(
+				int(screenVerticesA[lonIndex].x), 
+				int(screenVerticesA[lonIndex].y), 
+				int(screenVerticesB[lonIndex].x), 
+				int(screenVerticesB[lonIndex].y), colour);
+			
+			//ac
 			Novice::DrawLine(
 				int(screenVerticesA[latIndex].x), 
-				int(screenVerticesA[latIndex].z), 
-				int(screenVerticesB[latIndex].x), 
-				int(screenVerticesB[latIndex].z), colour);
+				int(screenVerticesA[latIndex].y), 
+				int(screenVerticesC[latIndex].x), 
+				int(screenVerticesC[latIndex].y), colour);
 			
-			ImGui::Begin("sphere");
-			ImGui::DragFloat3("sphre", &screenVerticesA[latIndex].x,0.01f);
+
+
+
+
+
+#pragma region 平面で考えたやつ
+
+
+			//xz
+			HalfCircleStart = {
+				sphere.radius * (cosf(lon)),
+				0.0f,
+				sphere.radius * (sinf(lon)) 
+			};
+
+			HalfCircleEnd = {
+				sphere.radius * (cosf(lon+phiD)),
+				0.0f,
+				sphere.radius * (sinf(lon+phiD))
+			};
+
+			//theta
+			HarfCircleXYStart = {
+				sphere.radius * (cosf(lat)),
+				sphere.radius * (sinf(lat)) ,
+				0.0f,
+				
+			};
+			HarfCircleXYEnd= {
+				sphere.radius * (cosf(lat+thetaD)),
+				sphere.radius * (sinf(lat+thetaD)),
+				0.0f,
+				 
+			};
+
+			Matrix4x4 WorldMatrixCircleStart = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleStart );
+			Matrix4x4 WorldMatrixCircleEnd = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleEnd );
+
+			Matrix4x4 WorldMatrixCircleStartXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYStart );
+			Matrix4x4 WorldMatrixCircleEndXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYEnd );
+
 		
+			
+
+
+			
+
+			Matrix4x4 worldViewProjectionMatrixCircleStart = Multiply(WorldMatrixCircleStart, Multiply(viewMatrix, viewProjectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixCircleEnd = Multiply(WorldMatrixCircleEnd, Multiply(viewMatrix, viewProjectionMatrix));
+			
+			Matrix4x4 worldViewProjectionMatrixCircleStartXY = Multiply(WorldMatrixCircleStartXY, Multiply(viewMatrix, viewProjectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixCircleEndXY = Multiply(WorldMatrixCircleEndXY, Multiply(viewMatrix, viewProjectionMatrix));
+			
+
+
+
+
+
+
+			ndcVerticesStart = Transform(HalfCircleStart, worldViewProjectionMatrixCircleStart);
+			ndcVerticesEnd= Transform(HalfCircleEnd, worldViewProjectionMatrixCircleEnd);
+
+			ndcVerticesXYStart = Transform(HarfCircleXYStart, worldViewProjectionMatrixCircleStartXY);
+			ndcVerticesXYEnd= Transform(HarfCircleXYEnd, worldViewProjectionMatrixCircleEndXY);
+
+
+
+			screenVerticesStart[lonIndex] =Transform(ndcVerticesStart, viewportMatrix);
+			screenVerticesEnd[lonIndex] =Transform(ndcVerticesEnd, viewportMatrix);
+
+
+			screenVerticesXYStart[latIndex] =Transform(ndcVerticesXYStart, viewportMatrix);
+			screenVerticesXYEnd[latIndex] =Transform(ndcVerticesXYEnd, viewportMatrix);
+
+
+
+			////xz
+			//Novice::DrawLine(
+			//	int(screenVerticesStart[lonIndex].x), 
+			//	int(screenVerticesStart[lonIndex].y), 
+			//	int(screenVerticesEnd[lonIndex].x), 
+			//	int(screenVerticesEnd[lonIndex].y), colour);
+			//
+			////xy
+			//Novice::DrawLine(
+			//	int(screenVerticesXYStart[latIndex].x), 
+			//	int(screenVerticesXYStart[latIndex].y), 
+			//	int(screenVerticesXYEnd[latIndex].x), 
+			//	int(screenVerticesXYEnd[latIndex].y), colour);
+
+
+#pragma endregion
+
+
+			ImGui::Begin("sphere");
+			ImGui::DragFloat3("sphre", &screenVerticesA[lonIndex].x,0.01f);
+			ImGui::DragFloat3("sphre", &screenVerticesB[lonIndex].x,0.01f);
+			ImGui::DragFloat3("sphre", &screenVerticesC[latIndex].x,0.01f);
 			ImGui::End();
 
 

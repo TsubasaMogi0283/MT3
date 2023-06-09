@@ -35,12 +35,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	LocalVertics[1] = {0.2f,0.0f,0.0f};
 	
 
-	Vector3 localCoodinate = { 0.1f,0.1f,0.1f };
-	Vector3 SphreRadius = { 0.5f,0.5f,0.5f };
+	float radius = 0.2f;
+	Vector3 localCoodinate = { 1.0f,1.0f,1.0f };
+	Vector3 SphreRadius = { radius,radius,radius };
 	Vector3 SphreOrigin = {};
 
 	//球
-	Sphere sphere = { localCoodinate,1.0f };
+	Sphere sphere = { localCoodinate,radius};
 
 	
 
@@ -78,7 +79,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//      ↓
 		//スクリーン座標系
 
-		\
 
 		//計算
 		Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
@@ -104,13 +104,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawSphre(sphere, viewMatrix, projectionMatrix, viewportMatrix, BLUE);
 
 
-
-		
-		//Vector3 screenVertices[3] = {};
-		//for (uint32_t i = 0; i < 3; i++) {
-		//	Vector3 ndcVertices = Transform(LocalVertics[i], worldViewProjectionMatrix);
-		//	screenVertices[i] = Transform(ndcVertices, viewportMatrix);
-		//}
 		
 
 
@@ -118,7 +111,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x,0.01f);
+		ImGui::DragFloat3("cameraRotate", &cameraRotate.x,0.01f);
+		ImGui::DragFloat3("cameraCenter", &sphere.center.x,0.01f);
 		
+		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 		ImGui::End();
 
 		///
