@@ -38,9 +38,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 localCoodinate = { 0.0f,0.0f,0.0f };
 
 
-
-	Sphere sphere = { localCoodinate,1.0f };
-
+	Segment segment = { {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
+	Vector3 point = { -1.5f,0.6f,0.6f };
 
 
 	// ウィンドウの×ボタンが押されるまでループ
