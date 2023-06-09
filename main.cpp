@@ -111,7 +111,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//	Vector3 ndcVertices = Transform(LocalVertics[i], worldViewProjectionMatrix);
 		//	screenVertices[i] = Transform(ndcVertices, viewportMatrix);
 		//}
-		Novice
+		
 
 
 
