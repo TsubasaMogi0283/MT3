@@ -711,11 +711,11 @@ void DrawSphre(
 	uint32_t colour) {
 
 	//分割数
-	const uint32_t SUBDIVISION = 10;
+	const uint32_t SUBDIVISION = 30;
 	//lat
-	const float LON_EVERY = float(M_PI/5.0f);
+	const float LON_EVERY = float(M_PI/20.0f);
 	//lon
-	const float LAT_EVERY = float(M_PI/10.0f);
+	const float LAT_EVERY = float(M_PI/30.0f);
 
 	
 
