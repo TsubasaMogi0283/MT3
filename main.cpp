@@ -87,7 +87,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//正射影ベクトルと最近接点
 		Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
-		//Vector3 closestPoint = ClosestPoint(point, segment);
+		Vector3 closestPoint = ClosestPoint(point, segment);
 
 
 

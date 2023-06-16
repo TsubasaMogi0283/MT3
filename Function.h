@@ -6,6 +6,7 @@ const int WINDOW_SIZE_WIDTH = 1280;
 const int WINDOW_SIZE_HEIGHT = 720;
 
 //四則計算
+Vector3 Add(const Vector3 m1, const Vector3 m2);
 Vector3 Subtract(const Vector3 m1, const Vector3 m2);
 
 

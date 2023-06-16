@@ -8,6 +8,16 @@
 #include <Vector2.h>
 #include <imgui.h>
 
+Vector3 Add(const Vector3 m1, const Vector3 m2) {
+	Vector3 result = {
+
+		m1.x + m2.x,
+		m1.y + m2.y,
+		m1.z + m2.z,
+	};
+
+	return result;
+}
 
 Vector3 Subtract(const Vector3 m1, const Vector3 m2) {
 	Vector3 result = {};
@@ -19,11 +29,6 @@ Vector3 Subtract(const Vector3 m1, const Vector3 m2) {
 	return result;
 
 }
-
-
-
-
-
 
 
 //Scale
@@ -860,10 +865,6 @@ void DrawSphre(
 	
 }
 
-
-
-
-
 float Clamp(float t, float min, float max) {
 	if (t < min) {
 		return min;
@@ -876,8 +877,6 @@ float Clamp(float t, float min, float max) {
 
 
 }
-
-
 
 float DotVector3(Vector3 v1, Vector3 v2 ,Vector3 v3) {
 	return v1.x * v2.x* v3.x + v1.y * v2.y* v3.y + v1.z * v2.z* v3.z;
@@ -1006,10 +1005,10 @@ Vector3 Normalize(Vector3 V1) {
 Vector3 Project(const Vector3 v1, const Vector3 v2) {
 	
 	//Aベクトルを正射影ベクトルにする
-	Vector3 Vector3C;
+	Vector3 Vector3C = {};
 
 	//bの長さを求める
-	float LengthB= Length(v2);
+	float lengthB= Length(v2);
 	float dotAB = DotVector2(v1, v2);
 
 	//||c||=||a||cosθ
@@ -1019,7 +1018,7 @@ Vector3 Project(const Vector3 v1, const Vector3 v2) {
 	//||c||=a・b/||b||になる
 
 	//正射影ベクトルの長さ
-	float t = dotAB / (LengthB * LengthB);
+	float t = dotAB / (lengthB * lengthB);
 	Vector3C.x = t*v2.x;
 	Vector3C.y = t*v2.y;
 	Vector3C.z = t*v2.z;
@@ -1028,9 +1027,15 @@ Vector3 Project(const Vector3 v1, const Vector3 v2) {
 	return Vector3C;
 }
 
-///Vector3 ClosestPoint(const Vector3& point, const Segment& segment) {
+//最近接点
+Vector3 ClosestPoint(const Vector3 point, const Segment segment) {
+	Vector3 A = Subtract(point, segment.origin);
+	
+	
+	Vector3 CP = Add(segment.origin,);
+	float lengthD=Length(Subtract(point,))
 
-//}
+}
 
 
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {
