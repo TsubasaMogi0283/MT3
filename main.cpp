@@ -56,14 +56,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		
-
-		
-
-		///
-		/// ↑更新処理ここまで
-		///
-
-
 		//レンダリングパイプライン(グラフィックスパイプライン)の流れ
 		//      
 		//ローカル座標系
@@ -90,6 +82,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//ビューポート
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
 
+		
+
+
+		//正射影ベクトルと最近接点
+		Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
+		//Vector3 closestPoint = ClosestPoint(point, segment);
+
+
+
+		///
+		/// ↑更新処理ここまで
+		///
+
+
+		
 
 		///
 		/// ↓描画処理ここから
@@ -103,34 +110,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-		////計算
-		////ワールドへ
-		//Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, localCoodinate);
-		//
-		//Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
-		//
-		////ビュー(カメラ)
-		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		//
-		////射影
-		//Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WINDOW_SIZE_WIDTH) / float(WINDOW_SIZE_HEIGHT), 0.1f, 100.0f);
-		//
-		////ワールドへ
-		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-		////ビューポート
-		//Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
-
-
 		
-		//Vector3 screenVertices[3] = {};
-		//for (uint32_t i = 0; i < 3; i++) {
-		//	Vector3 ndcVertices = Transform(LocalVertics[i], worldViewProjectionMatrix);
-		//	screenVertices[i] = Transform(ndcVertices, viewportMatrix);
-		//}
-
+		
+	
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x,0.01f);
+		ImGui::DragFloat3("point", &point.x,0.01f);
+		ImGui::DragFloat3("Segment origin", &segment.origin.x,0.01f);
+		ImGui::DragFloat3("Segmen difft", &segment.diff.x,0.01f);
+		ImGui::DragFloat3("Project", &project.x,0.01f);
 		
+		
+
+
+
+
 		ImGui::End();
 
 		///

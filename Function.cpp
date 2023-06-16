@@ -6,6 +6,7 @@
 #include  <math.h>
 
 #include <Vector2.h>
+#include <imgui.h>
 
 
 Vector3 Subtract(const Vector3 m1, const Vector3 m2) {
@@ -624,50 +625,240 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 }
 
 //Sphreを表示
-//void DrawSphre(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t colour) {
-//	const uint32_t SUBDIVISION = 10;
-//	const float LON_EVERY = M_PI/3.0f;
-//	const float LAT_EVERY = M_PI/3.0f;
-//
-//	Vector3 LocalVertices[10] = {};
-//	Vector3 ndcVertices = {};
-//	Vector3 screenVertices[10] = {};
-//
-//	for (uint32_t latIndex = 0; latIndex < SUBDIVISION; ++latIndex) {
-//		//現在の緯度
-//		float lat = -M_PI / 2.0f + LAT_EVERY * latIndex;
-//		for (uint32_t lonIndex = 0; lonIndex < SUBDIVISION; ++lonIndex) {
-//			//現在の軽度
-//			float lon = lonIndex * LON_EVERY;
-//
-//			//world座標でのabcを求める
-//			Vector3 a, b, c;
-//			Matrix4x4 WorldMatrixA = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},a );
-//			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
-//			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
-//
-//		
-//		
-//			////ワールドへ
-//			//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-//			Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
-//			Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
-//			Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
-//			
-//
-//			ndcVertices = Transform(LocalVertices[latIndex], viewProjectionMatrix);
-//			screenVertices[latIndex] = Transform(ndcVertices, viewportMatrix);
-//
-//
-//		}
-//
-//
-//
-//	}
-//
-//
-//	
-//}
+void DrawSphre(
+	const Sphere& sphere,
+	const Matrix4x4& viewMatrix, 
+	const Matrix4x4& viewProjectionMatrix, 
+	const Matrix4x4& viewportMatrix, 
+	uint32_t colour) {
+
+	//分割数
+	const uint32_t SUBDIVISION = 30;
+	//lat
+	const float LON_EVERY = float(M_PI/20.0f);
+	//lon
+	const float LAT_EVERY = float(M_PI/30.0f);
+
+	
+
+	float thetaD = float(M_PI / SUBDIVISION);
+	float phiD = float(2.0f * M_PI / SUBDIVISION);
+
+
+
+
+
+	Vector3 ndcVerticesA = {};
+	Vector3 ndcVerticesB = {};
+	Vector3 ndcVerticesC = {};
+
+	Vector3 ndcVerticesStart = {};
+	Vector3 ndcVerticesEnd = {};
+
+	Vector3 ndcVerticesXYStart = {};
+	Vector3 ndcVerticesXYEnd = {};
+
+	Vector3 screenVerticesA[SUBDIVISION] = {};
+	Vector3 screenVerticesB[SUBDIVISION] = {};
+	Vector3 screenVerticesC[SUBDIVISION] = {};
+
+	Vector3 screenVerticesStart[SUBDIVISION] = {};
+	Vector3 screenVerticesEnd[SUBDIVISION] = {};
+
+	Vector3 screenVerticesXYStart[SUBDIVISION] = {};
+	Vector3 screenVerticesXYEnd[SUBDIVISION] = {};
+
+
+	for (uint32_t latIndex = 0; latIndex < SUBDIVISION; ++latIndex) {
+		//現在の緯度
+		//θ
+		float lat = float( - M_PI / 2.0f + LAT_EVERY * latIndex);
+		for (uint32_t lonIndex = 0; lonIndex < SUBDIVISION; ++lonIndex) {
+			//現在の経度
+			//ファイ
+			float lon = lonIndex * LON_EVERY;
+
+			//world座標でのabcを求める
+			//acはxz平面(phi,lon)
+			//abがxy平面(theta,lat)
+			Vector3 a, b, c;
+			
+			Vector3 HalfCircleStart,HalfCircleEnd;
+			Vector3 HarfCircleXYStart, HarfCircleXYEnd;
+
+			a = {sphere.radius*(cosf(lat) * cosf(lon)),
+				sphere.radius*(sinf(lat)),
+				sphere.radius*(cosf(lat) * sinf(lon)) 
+			};
+			
+			b = {sphere.radius*(cosf(lat+thetaD ) * cosf(lon)),
+				sphere.radius*(sinf(lat +thetaD)),
+				sphere.radius*(cosf(lat+thetaD) * sinf(lon))
+			};
+			
+			c = { sphere.radius*(cosf(lat) * cosf(lon+phiD)),
+				sphere.radius*(sinf(lat)),
+				sphere.radius*(cosf(lat) * sinf(lon+phiD))
+			};
+
+			
+
+
+			//ab,acに引くよ！
+			Matrix4x4 WorldMatrixA = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},a );
+			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
+			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
+
+
+
+			
+			////ワールドへ
+			//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
+			
+
+
+
+
+			ndcVerticesA = Transform(a, worldViewProjectionMatrixA);
+			ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
+			ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
+			
+			
+
+
+			screenVerticesA[latIndex] = Transform(ndcVerticesA, viewportMatrix);
+			screenVerticesB[latIndex] = Transform(ndcVerticesB, viewportMatrix);
+			screenVerticesC[latIndex] = Transform(ndcVerticesC, viewportMatrix);
+
+
+
+			//ab
+			Novice::DrawLine(
+				int(screenVerticesA[lonIndex].x), 
+				int(screenVerticesA[lonIndex].y), 
+				int(screenVerticesB[lonIndex].x), 
+				int(screenVerticesB[lonIndex].y), colour);
+			
+			//ac
+			Novice::DrawLine(
+				int(screenVerticesA[latIndex].x), 
+				int(screenVerticesA[latIndex].y), 
+				int(screenVerticesC[latIndex].x), 
+				int(screenVerticesC[latIndex].y), colour);
+			
+
+
+
+
+
+#pragma region 平面で考えたやつ
+
+
+			//xz
+			HalfCircleStart = {
+				sphere.radius * (cosf(lon)),
+				0.0f,
+				sphere.radius * (sinf(lon)) 
+			};
+
+			HalfCircleEnd = {
+				sphere.radius * (cosf(lon+phiD)),
+				0.0f,
+				sphere.radius * (sinf(lon+phiD))
+			};
+
+			//theta
+			HarfCircleXYStart = {
+				sphere.radius * (cosf(lat)),
+				sphere.radius * (sinf(lat)) ,
+				0.0f,
+				
+			};
+			HarfCircleXYEnd= {
+				sphere.radius * (cosf(lat+thetaD)),
+				sphere.radius * (sinf(lat+thetaD)),
+				0.0f,
+				 
+			};
+
+			Matrix4x4 WorldMatrixCircleStart = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleStart );
+			Matrix4x4 WorldMatrixCircleEnd = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleEnd );
+
+			Matrix4x4 WorldMatrixCircleStartXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYStart );
+			Matrix4x4 WorldMatrixCircleEndXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYEnd );
+
+		
+			
+
+
+			
+
+			Matrix4x4 worldViewProjectionMatrixCircleStart = Multiply(WorldMatrixCircleStart, Multiply(viewMatrix, viewProjectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixCircleEnd = Multiply(WorldMatrixCircleEnd, Multiply(viewMatrix, viewProjectionMatrix));
+			
+			Matrix4x4 worldViewProjectionMatrixCircleStartXY = Multiply(WorldMatrixCircleStartXY, Multiply(viewMatrix, viewProjectionMatrix));
+			Matrix4x4 worldViewProjectionMatrixCircleEndXY = Multiply(WorldMatrixCircleEndXY, Multiply(viewMatrix, viewProjectionMatrix));
+			
+
+
+
+
+
+
+			ndcVerticesStart = Transform(HalfCircleStart, worldViewProjectionMatrixCircleStart);
+			ndcVerticesEnd= Transform(HalfCircleEnd, worldViewProjectionMatrixCircleEnd);
+
+			ndcVerticesXYStart = Transform(HarfCircleXYStart, worldViewProjectionMatrixCircleStartXY);
+			ndcVerticesXYEnd= Transform(HarfCircleXYEnd, worldViewProjectionMatrixCircleEndXY);
+
+
+
+			screenVerticesStart[lonIndex] =Transform(ndcVerticesStart, viewportMatrix);
+			screenVerticesEnd[lonIndex] =Transform(ndcVerticesEnd, viewportMatrix);
+
+
+			screenVerticesXYStart[latIndex] =Transform(ndcVerticesXYStart, viewportMatrix);
+			screenVerticesXYEnd[latIndex] =Transform(ndcVerticesXYEnd, viewportMatrix);
+
+
+
+			////xz
+			//Novice::DrawLine(
+			//	int(screenVerticesStart[lonIndex].x), 
+			//	int(screenVerticesStart[lonIndex].y), 
+			//	int(screenVerticesEnd[lonIndex].x), 
+			//	int(screenVerticesEnd[lonIndex].y), colour);
+			//
+			////xy
+			//Novice::DrawLine(
+			//	int(screenVerticesXYStart[latIndex].x), 
+			//	int(screenVerticesXYStart[latIndex].y), 
+			//	int(screenVerticesXYEnd[latIndex].x), 
+			//	int(screenVerticesXYEnd[latIndex].y), colour);
+
+
+#pragma endregion
+
+
+			ImGui::Begin("sphere");
+			ImGui::DragFloat3("sphre", &screenVerticesA[lonIndex].x,0.01f);
+			ImGui::DragFloat3("sphre", &screenVerticesB[lonIndex].x,0.01f);
+			ImGui::DragFloat3("sphre", &screenVerticesC[latIndex].x,0.01f);
+			ImGui::End();
+
+
+		}
+
+
+
+	}
+
+
+	
+}
 
 
 
@@ -688,8 +879,12 @@ float Clamp(float t, float min, float max) {
 
 
 
-float Dot(Vector3 v1, Vector3 v2 ,Vector3 v3) {
+float DotVector3(Vector3 v1, Vector3 v2 ,Vector3 v3) {
 	return v1.x * v2.x* v3.x + v1.y * v2.y* v3.y + v1.z * v2.z* v3.z;
+}
+
+float DotVector2(Vector3 v1, Vector3 v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 float Length(Vector3 V1) {
@@ -724,94 +919,118 @@ Vector3 Normalize(Vector3 V1) {
 
 
 
-bool CapsuleCollision(Vector3 playerCenterPosition,Vector3 capsuleRadius) {
+//bool CapsuleCollision(Vector3 playerCenterPosition,Vector3 capsuleRadius) {
+//	
+//	//Vector2 RiverCapsuleRadius = { 50.0f,50.0f };
+//	//Vector2 RiverCapsuleA = {180.0f,RiverCapsuleRadius .y};
+//	//Vector2 RiverCapsuleB = { RiverCapsuleRadius.x,360.0f};
+//	////Vector2 RiverVectorC(Playerだよ)
+//	//Vector2	RiverVectorD = {0.0f,0.0f};
+//	//Vector2 RiverVectorE = { 0.0f,0.0f };
+//	//Vector2 RiverVectorF = { 0.0f,0.0f };
+//	//
+//	//Vector2 RiverVectorBA = { 0.0f,0.0f };
+//	//Vector2 RiverDistance = { 0.0f,0.0f };
+//	//float riverDistance = 0.0f;
+//	//const float RIVER_SOUND_INTERVAL = 30.0f;
+//	//
+//	//Vector2 RiverCoodinate = { 0.0f,0.0f };
+//	//Vector2 RiverNewCoodinate = { 0.0f,0.0f };
+//
+//
+//
+//	//^...正規化したやつ
+//	//カプセル
+//	Vector3 CapsuleA = {};
+//	Vector3 CapsuleB = {};
+//
+//	Vector3 CapsuleBA = {};
+//
+//	Vector3 NormalizeVector3 = {};
+//
+//
+//	//Playerなど
+//	Vector3 VectorP = {};
+//
+//	Vector3 VectorD = {};
+//
+//	//計算用
+//
+//	
+//
+//	//計算
+//	VectorD = Subtract(playerCenterPosition, CapsuleA);
+//	CapsuleBA = Subtract(CapsuleB, CapsuleA);
+//
+//	NormalizeVector3 = Normalize(CapsuleBA);
+//
+//
+//	//float t = DotVector3(VectorD, NormalizeVector3,) / Length(NormalizeVector3);
+//
+//	//カプセル
+//	//RiverVectorD.x = PlayerCenterPosition.x - RiverCapsuleA.x;
+//	//RiverVectorD.y = PlayerCenterPosition.y - RiverCapsuleA.y;
+//	//
+//	//RiverVectorBA.x = RiverCapsuleB.x - RiverCapsuleA.x;
+//	//RiverVectorBA.y = RiverCapsuleB.y - RiverCapsuleA.y;
+//	//
+//	////BAを正規化
+//	//RiverVectorE = Normalize(RiverVectorBA);
+//	//
+//	// 
+//	// 
+//	// 
+//	////tの値を求める。dotは内積
+//	////lengthはベクトルの長さを求める
+//	//float t = DotVector3(RiverVectorD, RiverVectorE) / Length(RiverVectorBA);
+//	//
+//	////clampを使用
+//	//t = Clamp(t, 0.0f, 1.0f);
+//	//
+//	////線形補間
+//	//RiverVectorF.x = (1.0f - t) * RiverCapsuleA.x + t * RiverCapsuleB.x;
+//	//RiverVectorF.y = (1.0f - t) * RiverCapsuleA.y + t * RiverCapsuleB.y;
+//	//
+//	////距離を求める
+//	//RiverDistance.x = PlayerCenterPosition.x - RiverVectorF.x;
+//	//RiverDistance.y = PlayerCenterPosition.y - RiverVectorF.y;
+//	//
+//	//riverDistance = sqrtf(RiverDistance.x * RiverDistance.x + RiverDistance.y * RiverDistance.y);
+//	//
+//	//
+//	//RiverNewCoodinate.x = RiverCoodinate.x - WorldScrollAmount.x;
+//	//RiverNewCoodinate.y = RiverCoodinate.y - WorldScrollAmount.y;
+//
+//}
+
+Vector3 Project(const Vector3 v1, const Vector3 v2) {
 	
-	//Vector2 RiverCapsuleRadius = { 50.0f,50.0f };
-	//Vector2 RiverCapsuleA = {180.0f,RiverCapsuleRadius .y};
-	//Vector2 RiverCapsuleB = { RiverCapsuleRadius.x,360.0f};
-	////Vector2 RiverVectorC(Playerだよ)
-	//Vector2	RiverVectorD = {0.0f,0.0f};
-	//Vector2 RiverVectorE = { 0.0f,0.0f };
-	//Vector2 RiverVectorF = { 0.0f,0.0f };
-	//
-	//Vector2 RiverVectorBA = { 0.0f,0.0f };
-	//Vector2 RiverDistance = { 0.0f,0.0f };
-	//float riverDistance = 0.0f;
-	//const float RIVER_SOUND_INTERVAL = 30.0f;
-	//
-	//Vector2 RiverCoodinate = { 0.0f,0.0f };
-	//Vector2 RiverNewCoodinate = { 0.0f,0.0f };
+	//Aベクトルを正射影ベクトルにする
+	Vector3 Vector3C;
+
+	//bの長さを求める
+	float LengthB= Length(v2);
+	float dotAB = DotVector2(v1, v2);
+
+	//||c||=||a||cosθ
+	//     ↓
+	// a・b=||a|| ||b||cosθより
+	//     ↓
+	//||c||=a・b/||b||になる
+
+	//正射影ベクトルの長さ
+	float t = dotAB / (LengthB * LengthB);
+	Vector3C.x = t*v2.x;
+	Vector3C.y = t*v2.y;
+	Vector3C.z = t*v2.z;
 
 
-
-	//^...正規化したやつ
-	//カプセル
-	Vector3 CapsuleA = {};
-	Vector3 CapsuleB = {};
-
-	Vector3 CapsuleBA = {};
-
-	Vector3 NormalizeVector3 = {};
-
-
-	//Playerなど
-	Vector3 VectorP = {};
-
-	Vector3 VectorD = {};
-
-	//計算用
-
-	
-
-	//計算
-	VectorD = Subtract(playerCenterPosition, CapsuleA);
-	CapsuleBA = Subtract(CapsuleB, CapsuleA);
-
-	NormalizeVector3 = Normalize(CapsuleBA);
-
-
-	float t = Dot(VectorD, NormalizeVector3) / Length(NormalizeVector3);
-
-	//カプセル
-	//RiverVectorD.x = PlayerCenterPosition.x - RiverCapsuleA.x;
-	//RiverVectorD.y = PlayerCenterPosition.y - RiverCapsuleA.y;
-	//
-	//RiverVectorBA.x = RiverCapsuleB.x - RiverCapsuleA.x;
-	//RiverVectorBA.y = RiverCapsuleB.y - RiverCapsuleA.y;
-	//
-	////BAを正規化
-	//RiverVectorE = Normalize(RiverVectorBA);
-	//
-	// 
-	// 
-	// 
-	////tの値を求める。dotは内積
-	////lengthはベクトルの長さを求める
-	//float t = Dot(RiverVectorD, RiverVectorE) / Length(RiverVectorBA);
-	//
-	////clampを使用
-	//t = Clamp(t, 0.0f, 1.0f);
-	//
-	////線形補間
-	//RiverVectorF.x = (1.0f - t) * RiverCapsuleA.x + t * RiverCapsuleB.x;
-	//RiverVectorF.y = (1.0f - t) * RiverCapsuleA.y + t * RiverCapsuleB.y;
-	//
-	////距離を求める
-	//RiverDistance.x = PlayerCenterPosition.x - RiverVectorF.x;
-	//RiverDistance.y = PlayerCenterPosition.y - RiverVectorF.y;
-	//
-	//riverDistance = sqrtf(RiverDistance.x * RiverDistance.x + RiverDistance.y * RiverDistance.y);
-	//
-	//
-	//RiverNewCoodinate.x = RiverCoodinate.x - WorldScrollAmount.x;
-	//RiverNewCoodinate.y = RiverCoodinate.y - WorldScrollAmount.y;
-
+	return Vector3C;
 }
 
-Vector3 Project(const Vector3& v1, const Vector3& v2) {
+///Vector3 ClosestPoint(const Vector3& point, const Segment& segment) {
 
-}
-
+//}
 
 
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {

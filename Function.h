@@ -98,32 +98,23 @@ struct Segment {
 };
 
 
-float Clamp(float t, float min, float max) {
-	if (t < min) {
-		return min;
-	}
-	else if (t > max) {
-		return max;
-	}
-
-	return t;
-
-
-}
+float Clamp(float t, float min, float max);
 
 
 
-float Dot(Vector3 v1, Vector3 v2, Vector3 v3);
+float DotVector3(const Vector3 v1, const Vector3 v2, const Vector3 v3);
+float DotVector2(const Vector3 v1, const Vector3 v2);
+
 float Length(Vector3 V1);
 Vector3 Normalize(Vector3 V1);
 
+Vector3 Project(const Vector3 v1, const Vector3 v2);
 
-Vector3 Project(const Vector3& v1, const Vector3& v2);
 
+//Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 
-bool CapsuleCollision() {
-	
-	//川(カプセル)
+//bool CapsuleCollision();
+//川(カプセル)
 	//RiverVectorD.x = PlayerCenterPosition.x - RiverCapsuleA.x;
 	//RiverVectorD.y = PlayerCenterPosition.y - RiverCapsuleA.y;
 	//
@@ -135,7 +126,7 @@ bool CapsuleCollision() {
 	//
 	////tの値を求める。dotは内積
 	////lengthはベクトルの長さを求める
-	//float t = Dot(RiverVectorD, RiverVectorE) / Length(RiverVectorBA);
+	//float t = DotVector3(RiverVectorD, RiverVectorE) / Length(RiverVectorBA);
 	//
 	////clampを使用
 	//t = Clamp(t, 0.0f, 1.0f);
@@ -153,6 +144,3 @@ bool CapsuleCollision() {
 	//
 	//RiverNewCoodinate.x = RiverCoodinate.x - WorldScrollAmount.x;
 	//RiverNewCoodinate.y = RiverCoodinate.y - WorldScrollAmount.y;
-
-}
-
