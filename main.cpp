@@ -38,9 +38,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 localCoodinate = { 0.0f,0.0f,0.0f };
 
 
-	Segment segment = { {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
+	Segment segment = { {-2.0f,-1.0f,0.01f},{3.0f,2.0f,2.0f} };
 	Vector3 point = { -1.5f,0.6f,0.6f };
 
+
+	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -89,7 +91,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
 		Vector3 closestPoint = ClosestPoint(point, segment);
 
-
+		
 
 		///
 		/// ↑更新処理ここまで
@@ -106,11 +108,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//DrawGrid(const Matrix4x4 & viewProjectionMatrix, const Matrix4x4 & viewportMatrix);
 		DrawGrid(viewMatrix,projectionMatrix, viewportMatrix);
 
-		//DrawSphre(sphere, viewMatrix, projectionMatrix, viewportMatrix, BLUE);
+		//DrawSphere(sphere, viewMatrix, projectionMatrix, viewportMatrix, BLUE);
 
 
+		//1cmの球を描画
+		Sphere pointSphere{ point,0.01f };
+		Sphere closestPointSphere{ closestPoint,0.01f };
+		DrawSphere(pointSphere, viewMatrix, projectionMatrix, viewportMatrix, RED);
+		DrawSphere(closestPointSphere, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
 
 		
+		Vector3 start = Transform(Transform(segment.origin, projectionMatrix), viewportMatrix);
+		Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), projectionMatrix), viewportMatrix);
+		Novice::DrawLine(
+			int(start.x), 
+			int(start.y), 
+			int(end.x), 
+			int(end.y), WHITE);
+
 		
 	
 		ImGui::Begin("Window");

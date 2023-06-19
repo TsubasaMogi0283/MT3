@@ -630,12 +630,12 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 }
 
 //Sphreを表示
-void DrawSphre(
+void DrawSphere(
 	const Sphere& sphere,
 	const Matrix4x4& viewMatrix, 
 	const Matrix4x4& viewProjectionMatrix, 
 	const Matrix4x4& viewportMatrix, 
-	uint32_t colour) {
+	unsigned int  colour) {
 
 	//分割数
 	const uint32_t SUBDIVISION = 30;
@@ -918,89 +918,6 @@ Vector3 Normalize(Vector3 V1) {
 
 
 
-//bool CapsuleCollision(Vector3 playerCenterPosition,Vector3 capsuleRadius) {
-//	
-//	//Vector2 RiverCapsuleRadius = { 50.0f,50.0f };
-//	//Vector2 RiverCapsuleA = {180.0f,RiverCapsuleRadius .y};
-//	//Vector2 RiverCapsuleB = { RiverCapsuleRadius.x,360.0f};
-//	////Vector2 RiverVectorC(Playerだよ)
-//	//Vector2	RiverVectorD = {0.0f,0.0f};
-//	//Vector2 RiverVectorE = { 0.0f,0.0f };
-//	//Vector2 RiverVectorF = { 0.0f,0.0f };
-//	//
-//	//Vector2 RiverVectorBA = { 0.0f,0.0f };
-//	//Vector2 RiverDistance = { 0.0f,0.0f };
-//	//float riverDistance = 0.0f;
-//	//const float RIVER_SOUND_INTERVAL = 30.0f;
-//	//
-//	//Vector2 RiverCoodinate = { 0.0f,0.0f };
-//	//Vector2 RiverNewCoodinate = { 0.0f,0.0f };
-//
-//
-//
-//	//^...正規化したやつ
-//	//カプセル
-//	Vector3 CapsuleA = {};
-//	Vector3 CapsuleB = {};
-//
-//	Vector3 CapsuleBA = {};
-//
-//	Vector3 NormalizeVector3 = {};
-//
-//
-//	//Playerなど
-//	Vector3 VectorP = {};
-//
-//	Vector3 VectorD = {};
-//
-//	//計算用
-//
-//	
-//
-//	//計算
-//	VectorD = Subtract(playerCenterPosition, CapsuleA);
-//	CapsuleBA = Subtract(CapsuleB, CapsuleA);
-//
-//	NormalizeVector3 = Normalize(CapsuleBA);
-//
-//
-//	//float t = DotVector3(VectorD, NormalizeVector3,) / Length(NormalizeVector3);
-//
-//	//カプセル
-//	//RiverVectorD.x = PlayerCenterPosition.x - RiverCapsuleA.x;
-//	//RiverVectorD.y = PlayerCenterPosition.y - RiverCapsuleA.y;
-//	//
-//	//RiverVectorBA.x = RiverCapsuleB.x - RiverCapsuleA.x;
-//	//RiverVectorBA.y = RiverCapsuleB.y - RiverCapsuleA.y;
-//	//
-//	////BAを正規化
-//	//RiverVectorE = Normalize(RiverVectorBA);
-//	//
-//	// 
-//	// 
-//	// 
-//	////tの値を求める。dotは内積
-//	////lengthはベクトルの長さを求める
-//	//float t = DotVector3(RiverVectorD, RiverVectorE) / Length(RiverVectorBA);
-//	//
-//	////clampを使用
-//	//t = Clamp(t, 0.0f, 1.0f);
-//	//
-//	////線形補間
-//	//RiverVectorF.x = (1.0f - t) * RiverCapsuleA.x + t * RiverCapsuleB.x;
-//	//RiverVectorF.y = (1.0f - t) * RiverCapsuleA.y + t * RiverCapsuleB.y;
-//	//
-//	////距離を求める
-//	//RiverDistance.x = PlayerCenterPosition.x - RiverVectorF.x;
-//	//RiverDistance.y = PlayerCenterPosition.y - RiverVectorF.y;
-//	//
-//	//riverDistance = sqrtf(RiverDistance.x * RiverDistance.x + RiverDistance.y * RiverDistance.y);
-//	//
-//	//
-//	//RiverNewCoodinate.x = RiverCoodinate.x - WorldScrollAmount.x;
-//	//RiverNewCoodinate.y = RiverCoodinate.y - WorldScrollAmount.y;
-//
-//}
 
 Vector3 Project(const Vector3 v1, const Vector3 v2) {
 	
@@ -1019,9 +936,10 @@ Vector3 Project(const Vector3 v1, const Vector3 v2) {
 
 	//正射影ベクトルの長さ
 	float t = dotAB / (lengthB * lengthB);
-	Vector3C.x = t*v2.x;
-	Vector3C.y = t*v2.y;
-	Vector3C.z = t*v2.z;
+	float newT = Clamp(t, 0.0f, 1.0f);
+	Vector3C.x = newT*v2.x;
+	Vector3C.y = newT*v2.y;
+	Vector3C.z = newT*v2.z;
 
 
 	return Vector3C;
@@ -1029,12 +947,34 @@ Vector3 Project(const Vector3 v1, const Vector3 v2) {
 
 //最近接点
 Vector3 ClosestPoint(const Vector3 point, const Segment segment) {
-	Vector3 A = Subtract(point, segment.origin);
 	
-	
-	Vector3 CP = Add(segment.origin,);
-	float lengthD=Length(Subtract(point,))
+	//Projectで省略してもよかったけど
+	//こっちの方が自分の為になると思った
+	//A..PO
+	Vector3 Vector3A = Subtract(point,segment.origin);
+	Vector3 Vector3B = Subtract(segment.diff, segment.origin);
 
+	float lengthB=Length(Subtract(segment.diff,segment.origin));
+	float dotAB = DotVector2(point, Vector3B);
+
+	float t = dotAB / (lengthB * lengthB);
+	float newT = Clamp(t, 0.0f, 1.0f);
+	
+	Vector3 ProjbA = {};
+	ProjbA.x = newT*Vector3B.x;
+	ProjbA.y = newT*Vector3B.y;
+	ProjbA.z = newT*Vector3B.z;
+
+	
+
+
+
+
+	Vector3 Vector3CP = Add(segment.origin, ProjbA);
+	//float lengthD = Length(Vector3CP);
+
+
+	return Vector3CP;
 }
 
 
