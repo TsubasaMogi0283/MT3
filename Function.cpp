@@ -533,7 +533,7 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 //Gridを表示
 void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	//Gridの半分の幅
-	const float GRID_HALF_WIDTH = 2.0f;
+	const float GRID_HALF_WIDTH = 1.0f;
 	
 	//分割数
 	const uint32_t SUB_DEVISION = 10;
@@ -543,22 +543,64 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 
 
 
+	//縦
 
-	Vector3 LocalVertices[10] = {};
-	Vector3 ScreenVertices = {};
-	Matrix4x4 WorldMatrix[10] = {};
-	Vector3 ndcVertices = {};
-	Vector3 screenVertices[10] = {};
+	Vector3 LocalVerticesStartColumn[11] = {};
+	Vector3 LocalVerticesEndColumn[11] = {};
+	
+	Matrix4x4 WorldMatrixStartColumn[11] = {};
+	Matrix4x4 WorldMatrixEndColumn[11] = {};
+
+	
+	Vector3 ScreenVerticesColumn = {};
+	
+	Vector3 ndcVerticesStartColumn = {};
+	Vector3 ndcVerticesEndColumn = {};
+
+
+	Vector3 screenVerticesStartColumn[11] = {};
+	Vector3 screenVerticesEndColumn[11] = {};
+
+
+	//横
+	Vector3 LocalVerticesStartLine[11] = {};
+	Vector3 LocalVerticesEndLine[11] = {};
+	
+	Matrix4x4 WorldMatrixStartLine[11] = {};
+	Matrix4x4 WorldMatrixEndLine[11] = {};
+
+	
+	Vector3 ScreenVerticesLine = {};
+	
+	Vector3 ndcVerticesStartLine = {};
+	Vector3 ndcVerticesEndLine = {};
+
+
+	Vector3 screenVerticesStartLine[11] = {};
+	Vector3 screenVerticesEndLine[11] = {};
+
+
+
 
 	//奥から手前への線を順々に引いてくる(縦)
-	for (int  xIndex = 0; xIndex < 1; ++xIndex) {
+	for (int  xIndex = 0; xIndex <= SUB_DEVISION; ++xIndex) {
 		//上の情報を使ってワールド座標上の始点と終点を求める
 		
 
 		
-		LocalVertices[xIndex].x = xIndex * GRID_HALF_WIDTH;
-		LocalVertices[xIndex].y = float(xIndex);
-		LocalVertices[xIndex].z = 0.0f;
+		LocalVerticesStartColumn[xIndex].x = xIndex*GRID_EVERY;
+		LocalVerticesStartColumn[xIndex].y = 0.0f;
+		LocalVerticesStartColumn[xIndex].z = -GRID_HALF_WIDTH;
+
+		//- GRID_HALF_WIDTH
+		LocalVerticesEndColumn[xIndex].x = xIndex*GRID_EVERY;
+		LocalVerticesEndColumn[xIndex].y = 0.0f;
+		LocalVerticesEndColumn[xIndex].z = GRID_HALF_WIDTH;
+
+
+
+
+
 
 		//ローカル座標系
 		//      ↓			(WorldMatrix)
@@ -571,64 +613,118 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 		//スクリーン座標系
 
 		
-		WorldMatrix[xIndex] = MakeAffineMatrix({1.0f,1.0f,1.0f}, {1.0f,1.0f,1.0f}, LocalVertices[xIndex]);
-
+		WorldMatrixStartColumn[xIndex] = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, LocalVerticesStartColumn[xIndex]);
+		WorldMatrixEndColumn[xIndex]=MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, LocalVerticesEndColumn[xIndex]);
 
 		
 		////ワールドへ
-		Matrix4x4 worldViewProjectionMatrix = Multiply(WorldMatrix[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixStart = Multiply(WorldMatrixStartColumn[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixEnd = Multiply(WorldMatrixEndColumn[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
 
 
-		ndcVertices = Transform(LocalVertices[xIndex], worldViewProjectionMatrix);
-		screenVertices[xIndex] = Transform(ndcVertices, viewportMatrix);
+		ndcVerticesStartColumn = Transform(LocalVerticesStartColumn[xIndex], worldViewProjectionMatrixStart);
+		ndcVerticesEndColumn = Transform(LocalVerticesEndColumn[xIndex], worldViewProjectionMatrixEnd);
+
+
+		screenVerticesStartColumn[xIndex] = Transform(ndcVerticesStartColumn, viewportMatrix);
+		screenVerticesEndColumn[xIndex] = Transform(ndcVerticesEndColumn, viewportMatrix);
 		
 
-		////計算
-		////ワールドへ
-		//Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, localCoodinate);
-		//
-		//Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
-		//
-		////ビュー(カメラ)
-		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		//
-		 
-		
-		////射影
-		//Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WINDOW_SIZE_WIDTH) / float(WINDOW_SIZE_HEIGHT), 0.1f, 100.0f);
-		//
-		////ワールドへ
-		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-		////ビューポート
-		//Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
-
-
-		//ndcVertices = Transform(LocalVertices, viewProjectionMatrix);
-		//ScreenVertices = Transform(ndcVertices, viewportMatrix);
-
-		//スクリーン座標系まで変換をかける
 
 		//変換した座標を使って表示
 
 		Novice::DrawLine(
-			int(screenVertices[xIndex].x),
-			int(screenVertices[xIndex].y),
-			int(screenVertices[xIndex].x),
-			int(screenVertices[xIndex].y+GRID_EVERY),
+			int(screenVerticesStartColumn[xIndex].x),
+			int(screenVerticesStartColumn[xIndex].y),
+			int(screenVerticesEndColumn[xIndex].x),
+			int(screenVerticesEndColumn[xIndex].y),
 			RED);
+		
+		Novice::DrawLine(
+			int(screenVerticesStartColumn[0].x),
+			int(screenVerticesStartColumn[0].y),
+			int(screenVerticesEndColumn[0].x),
+			int(screenVerticesEndColumn[0].y),
+			BLUE);
+
 
 	}
 	//左から右も同じように順々に引いていく(横)
 	for (uint32_t zIndex = 0; zIndex <= SUB_DEVISION; ++zIndex) {
 		//奥から手前が左右に変わるだけ
 
+
+		LocalVerticesStartLine[zIndex].x =  -GRID_HALF_WIDTH;
+		LocalVerticesStartLine[zIndex].y = 0.0f;
+		LocalVerticesStartLine[zIndex].z =zIndex*GRID_EVERY-GRID_HALF_WIDTH;
+
+		LocalVerticesEndLine[zIndex].x = GRID_HALF_WIDTH;
+		LocalVerticesEndLine[zIndex].y = 0.0f;
+		LocalVerticesEndLine[zIndex].z = zIndex*GRID_EVERY-GRID_HALF_WIDTH;
+
+
+
+
+
+
+		//ローカル座標系
+		//      ↓			(WorldMatrix)
+		//ワールド座標系
+		//      ↓			(ViewMatrix(Inverse))
+		//ビュー座標系
+		//      ↓			(Projection)
+		//正規化デバイス座標系
+		//      ↓
+		//スクリーン座標系
+
+		
+		WorldMatrixStartLine[zIndex] = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, LocalVerticesStartLine[zIndex]);
+		WorldMatrixEndLine[zIndex]=MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, LocalVerticesEndLine[zIndex]);
+
+		
+
+		////ワールドへ
+		Matrix4x4 worldViewProjectionMatrixStartLine = Multiply(WorldMatrixStartLine[zIndex], Multiply(viewMatrix, viewProjectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixEndLine = Multiply(WorldMatrixEndLine[zIndex], Multiply(viewMatrix, viewProjectionMatrix));
+
+
+		ndcVerticesStartLine = Transform(LocalVerticesStartLine[zIndex], worldViewProjectionMatrixStartLine);
+		ndcVerticesEndLine = Transform(LocalVerticesEndLine[zIndex], worldViewProjectionMatrixEndLine);
+
+
+		screenVerticesStartLine[zIndex] = Transform(ndcVerticesStartLine, viewportMatrix);
+		screenVerticesEndLine[zIndex] = Transform(ndcVerticesEndLine, viewportMatrix);
+		
+
+
+		//変換した座標を使って表示
+
+		ImGui::Begin("Line[z]");
+		ImGui::DragFloat3("Grid-Z", &screenVerticesStartLine[zIndex].x,0.01f);
+		
+		ImGui::End();
+
+		Novice::DrawLine(
+			int(screenVerticesStartLine[zIndex].x),
+			int(screenVerticesStartLine[zIndex].y),
+			int(screenVerticesEndLine[zIndex].x),
+			int(screenVerticesEndLine[zIndex].y),
+			RED);
+		
+		Novice::DrawLine(
+			int(screenVerticesStartLine[0].x),
+			int(screenVerticesStartLine[0].y),
+			int(screenVerticesEndLine[0].x),
+			int(screenVerticesEndLine[0].y), BLUE);
+		
+
+
+
 	}
 
 
-	Novice::ScreenPrintf(0, 0, "%d,%d", screenVertices[0].x, screenVertices[0].y);
 
 }
-
 //Sphreを表示
 void DrawSphere(
 	const Sphere& sphere,

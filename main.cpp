@@ -38,10 +38,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 localCoodinate = { 0.0f,0.0f,0.0f };
 
 
-	Segment segment = { {-2.0f,-1.0f,0.01f},{3.0f,2.0f,2.0f} };
-	Vector3 point = { -1.5f,0.6f,0.6f };
-
-
+	
 	
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -85,6 +82,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
 
 		
+		Segment segment = { {-2.0f,-1.0f,0.1f},{3.0f,2.0f,2.0f} };
+		Vector3 point = { 0.0f,0.6f,0.6f };
+
 
 
 		//正射影ベクトルと最近接点
@@ -105,15 +105,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		
 
-		//DrawGrid(const Matrix4x4 & viewProjectionMatrix, const Matrix4x4 & viewportMatrix);
 		DrawGrid(viewMatrix,projectionMatrix, viewportMatrix);
 
-		//DrawSphere(sphere, viewMatrix, projectionMatrix, viewportMatrix, BLUE);
 
 
 		//1cmの球を描画
 		Sphere pointSphere{ point,0.01f };
 		Sphere closestPointSphere{ closestPoint,0.01f };
+		//赤の方が描画できていない・・
 		DrawSphere(pointSphere, viewMatrix, projectionMatrix, viewportMatrix, RED);
 		DrawSphere(closestPointSphere, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
 
@@ -132,8 +131,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("point", &point.x,0.01f);
 		ImGui::DragFloat3("Segment origin", &segment.origin.x,0.01f);
 		ImGui::DragFloat3("Segmen difft", &segment.diff.x,0.01f);
-		ImGui::DragFloat3("Project", &project.x,0.01f);
-		
+
+		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		
 
 
