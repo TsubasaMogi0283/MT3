@@ -586,14 +586,22 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 	for (int  xIndex = 0; xIndex <= SUB_DEVISION; ++xIndex) {
 		//上の情報を使ってワールド座標上の始点と終点を求める
 		
+		////Gridの半分の幅
+		//const float GRID_HALF_WIDTH = 1.0f;
+		//
+		////分割数
+		//const uint32_t SUB_DEVISION = 10;
+		//
+		////一つ分の長さ
+		//const float GRID_EVERY = (GRID_HALF_WIDTH * 2.0f) / float(SUB_DEVISION);
 
 		
-		LocalVerticesStartColumn[xIndex].x = xIndex*GRID_EVERY;
+		LocalVerticesStartColumn[xIndex].x = xIndex/2.0f*GRID_EVERY + xIndex/2.0f*GRID_EVERY;
 		LocalVerticesStartColumn[xIndex].y = 0.0f;
 		LocalVerticesStartColumn[xIndex].z = -GRID_HALF_WIDTH;
 
 		//- GRID_HALF_WIDTH
-		LocalVerticesEndColumn[xIndex].x = xIndex*GRID_EVERY;
+		LocalVerticesEndColumn[xIndex].x = xIndex/2.0f*GRID_EVERY + xIndex/2.0f*GRID_EVERY;
 		LocalVerticesEndColumn[xIndex].y = 0.0f;
 		LocalVerticesEndColumn[xIndex].z = GRID_HALF_WIDTH;
 
@@ -653,14 +661,25 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 	for (uint32_t zIndex = 0; zIndex <= SUB_DEVISION; ++zIndex) {
 		//奥から手前が左右に変わるだけ
 
+		////Gridの半分の幅
+		//const float GRID_HALF_WIDTH = 1.0f;
+		//
+		////分割数
+		//const uint32_t SUB_DEVISION = 10;
+		//
+		////一つ分の長さ
+		//const float GRID_EVERY = (GRID_HALF_WIDTH * 2.0f) / float(SUB_DEVISION);
+
+
+
 
 		LocalVerticesStartLine[zIndex].x =  -GRID_HALF_WIDTH;
 		LocalVerticesStartLine[zIndex].y = 0.0f;
-		LocalVerticesStartLine[zIndex].z =zIndex*GRID_EVERY-GRID_HALF_WIDTH;
+		LocalVerticesStartLine[zIndex].z =zIndex/2.0f*GRID_EVERY + zIndex/2.0f*GRID_EVERY;
 
 		LocalVerticesEndLine[zIndex].x = GRID_HALF_WIDTH;
 		LocalVerticesEndLine[zIndex].y = 0.0f;
-		LocalVerticesEndLine[zIndex].z = zIndex*GRID_EVERY-GRID_HALF_WIDTH;
+		LocalVerticesEndLine[zIndex].z = zIndex/2.0f*GRID_EVERY + zIndex/2.0f*GRID_EVERY;
 
 
 
@@ -699,10 +718,6 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 
 		//変換した座標を使って表示
 
-		ImGui::Begin("Line[z]");
-		ImGui::DragFloat3("Grid-Z", &screenVerticesStartLine[zIndex].x,0.01f);
-		
-		ImGui::End();
 
 		Novice::DrawLine(
 			int(screenVerticesStartLine[zIndex].x),
@@ -943,12 +958,6 @@ void DrawSphere(
 
 #pragma endregion
 
-
-			ImGui::Begin("sphere");
-			ImGui::DragFloat3("sphre", &screenVerticesA[lonIndex].x,0.01f);
-			ImGui::DragFloat3("sphre", &screenVerticesB[lonIndex].x,0.01f);
-			ImGui::DragFloat3("sphre", &screenVerticesC[latIndex].x,0.01f);
-			ImGui::End();
 
 
 		}

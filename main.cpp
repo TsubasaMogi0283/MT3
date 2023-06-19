@@ -135,6 +135,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		
 
+		ImGui::Begin("Camera");
+		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x,0.01f);
+		ImGui::DragFloat3("cameraRotate", &cameraRotate.x,0.01f);
+		
+		ImGui::End();
 
 
 
