@@ -82,6 +82,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
 
 		
+
+
+
+
+
 		Segment segment = { {-2.0f,-1.0f,0.1f},{3.0f,2.0f,2.0f} };
 		Vector3 point = { 0.0f,0.6f,0.6f };
 
@@ -112,13 +117,47 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//1cmの球を描画
 		Sphere pointSphere{ point,0.01f };
 		Sphere closestPointSphere{ closestPoint,0.01f };
-		//赤の方が描画できていない・・
-		DrawSphere(pointSphere, viewMatrix, projectionMatrix, viewportMatrix, RED);
-		DrawSphere(closestPointSphere, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
+		
+
+
+		//線について
+
+
+		Matrix4x4 WorldMatrixSegmentOrigin = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, segment.origin);
+		Matrix4x4 WorldMatrixSegmentDiff=MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, segment.diff);
+		Matrix4x4 WorldMatrixPoint=MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, point);
+
+		////ワールドへ
+		Matrix4x4 worldViewProjectionMatrixSegmentOrigin = Multiply(WorldMatrixSegmentOrigin, Multiply(viewMatrix, projectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixSegmentDiff = Multiply(WorldMatrixSegmentDiff, Multiply(viewMatrix, projectionMatrix));
+		Matrix4x4 worldViewProjectionMatrixPoint = Multiply(WorldMatrixPoint, Multiply(viewMatrix, projectionMatrix));
+
+		Vector3 ndcVerticesSegmentOrigin = Transform(segment.origin, worldViewProjectionMatrixSegmentOrigin);
+		Vector3 ndcVerticesSegmentDiff = Transform(segment.diff, worldViewProjectionMatrixSegmentDiff);
+		Vector3 ndcVerticesPoint = Transform(point, worldViewProjectionMatrixPoint);
+
+
+
+		//Vector3 screenVerticesSegmentOrigin = Transform(ndcVerticesSegmentOrigin, viewportMatrix);
+		//Vector3 screenVerticesSegmentDiff = Transform(ndcVerticesSegmentDiff, viewportMatrix);
+		//Vector3 screenVerticesPoint = Transform(ndcVerticesPoint, viewportMatrix);
+
 
 		
-		Vector3 start = Transform(Transform(segment.origin, projectionMatrix), viewportMatrix);
-		Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), projectionMatrix), viewportMatrix);
+		Vector3 start = Transform(ndcVerticesSegmentOrigin, viewportMatrix);
+		Vector3 end = Transform(Add(ndcVerticesSegmentOrigin,ndcVerticesSegmentDiff ), viewportMatrix);
+		
+		
+
+
+		//赤の方が描画できていない・・
+		DrawSphere(pointSphere, viewMatrix, projectionMatrix, viewportMatrix, RED);
+		//黒い方は座標が少しおかしい
+		DrawSphere(closestPointSphere, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
+
+
+
+
 		Novice::DrawLine(
 			int(start.x), 
 			int(start.y), 

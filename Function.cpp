@@ -437,7 +437,7 @@ Matrix4x4 MakeAffineMatrix(const Vector3 scale, const Vector3 rotate, const Vect
 }
 
 
-
+//RED
 Vector3 Cross(const Vector3 v1, const Vector3 v2) {
 	Vector3 result = {0.0f,0.0f,0.0f};
 	result.x = v1.y * v2.z - v1.z * v2.y;
@@ -529,7 +529,6 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	return result;
 }
 
-
 //Gridを表示
 void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	//Gridの半分の幅
@@ -586,22 +585,13 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 	for (int  xIndex = 0; xIndex <= SUB_DEVISION; ++xIndex) {
 		//上の情報を使ってワールド座標上の始点と終点を求める
 		
-		////Gridの半分の幅
-		//const float GRID_HALF_WIDTH = 1.0f;
-		//
-		////分割数
-		//const uint32_t SUB_DEVISION = 10;
-		//
-		////一つ分の長さ
-		//const float GRID_EVERY = (GRID_HALF_WIDTH * 2.0f) / float(SUB_DEVISION);
 
 		
-		LocalVerticesStartColumn[xIndex].x = xIndex/2.0f*GRID_EVERY + xIndex/2.0f*GRID_EVERY;
+		LocalVerticesStartColumn[xIndex].x = xIndex*GRID_EVERY-GRID_HALF_WIDTH;
 		LocalVerticesStartColumn[xIndex].y = 0.0f;
 		LocalVerticesStartColumn[xIndex].z = -GRID_HALF_WIDTH;
 
-		//- GRID_HALF_WIDTH
-		LocalVerticesEndColumn[xIndex].x = xIndex/2.0f*GRID_EVERY + xIndex/2.0f*GRID_EVERY;
+		LocalVerticesEndColumn[xIndex].x = xIndex*GRID_EVERY- GRID_HALF_WIDTH;
 		LocalVerticesEndColumn[xIndex].y = 0.0f;
 		LocalVerticesEndColumn[xIndex].z = GRID_HALF_WIDTH;
 
@@ -661,25 +651,14 @@ void DrawGrid(const Matrix4x4&viewMatrix,const Matrix4x4& viewProjectionMatrix, 
 	for (uint32_t zIndex = 0; zIndex <= SUB_DEVISION; ++zIndex) {
 		//奥から手前が左右に変わるだけ
 
-		////Gridの半分の幅
-		//const float GRID_HALF_WIDTH = 1.0f;
-		//
-		////分割数
-		//const uint32_t SUB_DEVISION = 10;
-		//
-		////一つ分の長さ
-		//const float GRID_EVERY = (GRID_HALF_WIDTH * 2.0f) / float(SUB_DEVISION);
-
-
-
 
 		LocalVerticesStartLine[zIndex].x =  -GRID_HALF_WIDTH;
 		LocalVerticesStartLine[zIndex].y = 0.0f;
-		LocalVerticesStartLine[zIndex].z =zIndex/2.0f*GRID_EVERY + zIndex/2.0f*GRID_EVERY;
+		LocalVerticesStartLine[zIndex].z =zIndex*GRID_EVERY-GRID_HALF_WIDTH;
 
 		LocalVerticesEndLine[zIndex].x = GRID_HALF_WIDTH;
 		LocalVerticesEndLine[zIndex].y = 0.0f;
-		LocalVerticesEndLine[zIndex].z = zIndex/2.0f*GRID_EVERY + zIndex/2.0f*GRID_EVERY;
+		LocalVerticesEndLine[zIndex].z = zIndex*GRID_EVERY-GRID_HALF_WIDTH;
 
 
 
