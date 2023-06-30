@@ -746,6 +746,8 @@ void DrawSphere(
 	Vector3 ndcVerticesA = {};
 	Vector3 ndcVerticesB = {};
 	Vector3 ndcVerticesC = {};
+	Vector3 ndcVerticesCenter = {};
+
 
 	Vector3 ndcVerticesStart = {};
 	Vector3 ndcVerticesEnd = {};
@@ -756,6 +758,8 @@ void DrawSphere(
 	Vector3 screenVerticesA[SUBDIVISION] = {};
 	Vector3 screenVerticesB[SUBDIVISION] = {};
 	Vector3 screenVerticesC[SUBDIVISION] = {};
+	Vector3 screenVerticesCenter = {};
+
 
 	Vector3 screenVerticesStart[SUBDIVISION] = {};
 	Vector3 screenVerticesEnd[SUBDIVISION] = {};
@@ -781,6 +785,8 @@ void DrawSphere(
 			Vector3 HalfCircleStart,HalfCircleEnd;
 			Vector3 HarfCircleXYStart, HarfCircleXYEnd;
 
+
+			//Local
 			a = {sphere.radius*(cosf(lat) * cosf(lon)),
 				sphere.radius*(sinf(lat)),
 				sphere.radius*(cosf(lat) * sinf(lon)) 
@@ -791,7 +797,7 @@ void DrawSphere(
 				sphere.radius*(cosf(lat+thetaD) * sinf(lon))
 			};
 			
-			c = { sphere.radius*(cosf(lat) * cosf(lon+phiD)),
+			c = {sphere.radius*(cosf(lat) * cosf(lon+phiD)),
 				sphere.radius*(sinf(lat)),
 				sphere.radius*(cosf(lat) * sinf(lon+phiD))
 			};
@@ -800,13 +806,14 @@ void DrawSphere(
 
 
 			//ab,acに引くよ！
-			Matrix4x4 WorldMatrixA = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},a );
-			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},b );
-			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},c );
-
+			Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },Add(a,sphere.center));
+			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},Add(b,sphere.center) );
+			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},Add(c,sphere.center));
 
 
 			
+
+
 			////ワールドへ
 			//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 			Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
@@ -816,18 +823,15 @@ void DrawSphere(
 
 
 
-
-			ndcVerticesA = Transform(a, worldViewProjectionMatrixA);
-			ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
-			ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
-			
+			ndcVerticesA = Transform(Add(a,sphere.center), worldViewProjectionMatrixA);
+			ndcVerticesB = Transform(Add(b,sphere.center), worldViewProjectionMatrixB);
+			ndcVerticesC = Transform(Add(c,sphere.center), worldViewProjectionMatrixC);
 			
 
 
 			screenVerticesA[latIndex] = Transform(ndcVerticesA, viewportMatrix);
 			screenVerticesB[latIndex] = Transform(ndcVerticesB, viewportMatrix);
 			screenVerticesC[latIndex] = Transform(ndcVerticesC, viewportMatrix);
-
 
 
 			//ab
@@ -844,7 +848,6 @@ void DrawSphere(
 				int(screenVerticesC[latIndex].x), 
 				int(screenVerticesC[latIndex].y), colour);
 			
-
 
 
 
@@ -962,8 +965,8 @@ float Clamp(float t, float min, float max) {
 
 }
 
-float DotVector3(Vector3 v1, Vector3 v2 ,Vector3 v3) {
-	return v1.x * v2.x* v3.x + v1.y * v2.y* v3.y + v1.z * v2.z* v3.z;
+float DotVector3(Vector3 v1, Vector3 v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 float DotVector2(Vector3 v1, Vector3 v2) {
@@ -1003,14 +1006,14 @@ Vector3 Normalize(Vector3 V1) {
 
 
 
-Vector3 Project(const Vector3 v1, const Vector3 v2) {
+Vector3 Project(const Vector3 a, const Vector3 b) {
 	
 	//Aベクトルを正射影ベクトルにする
 	Vector3 Vector3C = {};
 
 	//bの長さを求める
-	float lengthB= Length(v2);
-	float dotAB = DotVector2(v1, v2);
+	float lengthB= Length(b);
+	float dotAB = DotVector3(a, b);
 
 	//||c||=||a||cosθ
 	//     ↓
@@ -1021,9 +1024,9 @@ Vector3 Project(const Vector3 v1, const Vector3 v2) {
 	//正射影ベクトルの長さ
 	float t = dotAB / (lengthB * lengthB);
 	float newT = Clamp(t, 0.0f, 1.0f);
-	Vector3C.x = newT*v2.x;
-	Vector3C.y = newT*v2.y;
-	Vector3C.z = newT*v2.z;
+	Vector3C.x = newT*b.x;
+	Vector3C.y = newT*b.y;
+	Vector3C.z = newT*b.z;
 
 
 	return Vector3C;

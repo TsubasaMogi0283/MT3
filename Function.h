@@ -103,7 +103,7 @@ float Clamp(float t, float min, float max);
 
 
 
-float DotVector3(const Vector3 v1, const Vector3 v2, const Vector3 v3);
+float DotVector3(const Vector3 v1, const Vector3 v2);
 float DotVector2(const Vector3 v1, const Vector3 v2);
 
 float Length(Vector3 V1);

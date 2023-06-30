@@ -39,7 +39,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	
+	Segment segment = { {-2.0f,-1.0f,0.1f},{3.0f,2.0f,2.0f} };
+	Vector3 point = { 0.0f,0.6f,0.6f };
+
+	Vector3 project = {};
+	Vector3 closestPoint = {};
+
+	//1cmの球を描画
+	Sphere pointSphere={ point,0.1f };;
+	Sphere closestPointSphere={ closestPoint,0.01f };;
+
 	
+		
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -54,7 +65,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		
+
 		//レンダリングパイプライン(グラフィックスパイプライン)の流れ
 		//      
 		//ローカル座標系
@@ -73,99 +84,149 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
 		////ビュー(カメラ)
 		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		
+
 		//射影
 		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WINDOW_SIZE_WIDTH) / float(WINDOW_SIZE_HEIGHT), 0.1f, 100.0f);
 
 
 		//ビューポート
-		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
-
-		
+		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
 
 
 
 
 
-		Segment segment = { {-2.0f,-1.0f,0.1f},{3.0f,2.0f,2.0f} };
-		Vector3 point = { 0.0f,0.6f,0.6f };
+
+
+
 
 
 
 		//正射影ベクトルと最近接点
-		Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
-		Vector3 closestPoint = ClosestPoint(point, segment);
+		project = Project(Subtract(point, segment.origin), segment.diff);
+		closestPoint = ClosestPoint(point, segment);
 
-		
+
 
 		///
 		/// ↑更新処理ここまで
 		///
 
 
-		
+
 
 		///
 		/// ↓描画処理ここから
 		///
-		
-
-		DrawGrid(viewMatrix,projectionMatrix, viewportMatrix);
 
 
 
-		//1cmの球を描画
-		Sphere pointSphere{ point,0.01f };
-		Sphere closestPointSphere{ closestPoint,0.01f };
-		
 
 
-		//線について
 
 
-		Matrix4x4 WorldMatrixSegmentOrigin = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, segment.origin);
-		Matrix4x4 WorldMatrixSegmentDiff=MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, segment.diff);
-		Matrix4x4 WorldMatrixPoint=MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, point);
 
-		////ワールドへ
+
+
+#pragma region 線について
+
+		//線分
+		Matrix4x4 WorldMatrixSegmentOrigin = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, segment.origin);
+		Matrix4x4 WorldMatrixSegmentDiff = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, segment.diff);
+
+
 		Matrix4x4 worldViewProjectionMatrixSegmentOrigin = Multiply(WorldMatrixSegmentOrigin, Multiply(viewMatrix, projectionMatrix));
 		Matrix4x4 worldViewProjectionMatrixSegmentDiff = Multiply(WorldMatrixSegmentDiff, Multiply(viewMatrix, projectionMatrix));
-		Matrix4x4 worldViewProjectionMatrixPoint = Multiply(WorldMatrixPoint, Multiply(viewMatrix, projectionMatrix));
+
 
 		Vector3 ndcVerticesSegmentOrigin = Transform(segment.origin, worldViewProjectionMatrixSegmentOrigin);
 		Vector3 ndcVerticesSegmentDiff = Transform(segment.diff, worldViewProjectionMatrixSegmentDiff);
+
+
+		Vector3 start = Transform(ndcVerticesSegmentOrigin, viewportMatrix);
+		Vector3 end = Transform(ndcVerticesSegmentDiff, viewportMatrix);
+
+
+
+		//Point(資料だとP)
+		Matrix4x4 WorldMatrixPoint = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, point);
+
+		Matrix4x4 worldViewProjectionMatrixPoint = Multiply(WorldMatrixPoint, Multiply(viewMatrix, projectionMatrix));
+		
 		Vector3 ndcVerticesPoint = Transform(point, worldViewProjectionMatrixPoint);
 
+		Vector3 pointCoodinate = Transform(ndcVerticesPoint, viewportMatrix);
 
 
-		//Vector3 screenVerticesSegmentOrigin = Transform(ndcVerticesSegmentOrigin, viewportMatrix);
-		//Vector3 screenVerticesSegmentDiff = Transform(ndcVerticesSegmentDiff, viewportMatrix);
-		//Vector3 screenVerticesPoint = Transform(ndcVerticesPoint, viewportMatrix);
-
-
-		
-		Vector3 start = Transform(ndcVerticesSegmentOrigin, viewportMatrix);
-		Vector3 end = Transform(Add(ndcVerticesSegmentOrigin,ndcVerticesSegmentDiff ), viewportMatrix);
+		//Projection
+		Matrix4x4 WorldMatrixProject = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, project);
 		
 		
+		Matrix4x4 worldViewProjectionMatrixProject = Multiply(WorldMatrixProject, Multiply(viewMatrix, projectionMatrix));
+		
+		
+		Vector3 ndcVerticesProject = Transform(project, worldViewProjectionMatrixProject);
 
-
-		//赤の方が描画できていない・・
-		DrawSphere(pointSphere, viewMatrix, projectionMatrix, viewportMatrix, RED);
-		//黒い方は座標が少しおかしい
-		DrawSphere(closestPointSphere, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
-
-
+		
+		Vector3 projectCoodinate=Transform(Add(ndcVerticesSegmentOrigin, ndcVerticesProject), viewportMatrix);
+		
+		
+		
 
 
 		Novice::DrawLine(
-			int(start.x), 
-			int(start.y), 
-			int(end.x), 
+			int(start.x),
+			int(start.y),
+			int(end.x),
 			int(end.y), WHITE);
 
+
+#pragma endregion
+
+
+		//Grid
+		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
+
+		//赤の方座標がおかしい
 		
+		//DrawSphere({ projectCoodinate,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, RED);
+
+
+		
+
+		//SegmentOrigin
+		Novice::DrawEllipse(
+			int(start.x),
+			int(start.y), 
+			int(50.0f), 
+			int(50.0f), 0.0f, BLUE,kFillModeSolid);
+
+
+		//VectorOについて
+		Novice::DrawLine(
+			int(start.x),
+			int(start.y), 
+			int(pointCoodinate.x), 
+			int(pointCoodinate.y),BLACK);
 	
+		//VectorOについて
+		Novice::DrawEllipse(
+			int(pointCoodinate.x), 
+			int(pointCoodinate.y),
+			50, 50, 0.0f, RED, kFillModeSolid);
+
+
+		//Projection後のCP
+		Novice::DrawEllipse(
+			int(projectCoodinate.x), 
+			int(projectCoodinate.y),
+			50, 50, 0.0f, GREEN, kFillModeSolid);
+		
+
+
+		DrawSphere({ pointCoodinate,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
+
+
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("point", &point.x,0.01f);
 		ImGui::DragFloat3("Segment origin", &segment.origin.x,0.01f);
@@ -173,6 +234,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		
+		ImGui::End();
+
+
+
 
 		ImGui::Begin("Camera");
 		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x,0.01f);
@@ -181,8 +246,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::End();
 
 
-
+		ImGui::Begin("Shere");
+		ImGui::DragFloat3("Point", &project.x,0.01f);
+		ImGui::DragFloat3("ClosestPoint", &closestPoint.x,0.01f);
+		ImGui::SliderFloat("Radius", &pointSphere.radius, 0.0f, 0.5f);
+		
 		ImGui::End();
+
+		
 
 		///
 		/// ↑描画処理ここまで
