@@ -111,5 +111,8 @@
     <ClInclude Include="Function.h">
       <Filter>KamataEngine\Include</Filter>
     </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>KamataEngine\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

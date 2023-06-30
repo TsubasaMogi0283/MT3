@@ -1083,3 +1083,53 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4 matrix, const char* string
 		}
 	}
 }
+
+
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
+
+#pragma region まず頂点を求める
+
+	//上
+	Matrix4x4 worldTriangleV0 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0 }, triangle.vertices0);
+	//右
+	Matrix4x4 worldTriangleV1 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0 }, triangle.vertices1);
+	//左
+	Matrix4x4 worldTriangleV2 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0 }, triangle.vertices2);
+	
+
+
+	Matrix4x4 worldViewProjectionMatrixTriangleV0= Multiply(worldTriangleV0, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionMatrixTriangleV1= Multiply(worldTriangleV1, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionMatrixTriangleV2= Multiply(worldTriangleV2, Multiply(viewMatrix, viewProjectionMatrix));
+
+		
+	Vector3 ndcVerticesV0 = Transform(triangle.vertices0, worldViewProjectionMatrixTriangleV0);
+	Vector3 ndcVerticesV1 = Transform(triangle.vertices1, worldViewProjectionMatrixTriangleV1);
+	Vector3 ndcVerticesV2 = Transform(triangle.vertices2, worldViewProjectionMatrixTriangleV2);
+	
+	Vector3 screenVerticesV0 = Transform(ndcVerticesV0, viewportMatrix);
+	Vector3 screenVerticesV1 = Transform(ndcVerticesV1, viewportMatrix);
+	Vector3 screenVerticesV2 = Transform(ndcVerticesV2, viewportMatrix);
+		
+
+#pragma endregion
+
+
+	Novice::DrawTriangle(
+		int(screenVerticesV0.x), 
+		int(screenVerticesV0.y), 
+		int(screenVerticesV1.x), 
+		int(screenVerticesV1.y), 
+		int(screenVerticesV2.x), 
+		int(screenVerticesV2.y), color, kFillModeWireFrame);
+
+}
+
+
+
+
+
+//bool IsCollisionTriangleAndLine(const Triangle triangle, const Segment) {
+//	//Vector3 cross01=Cross(triangle.vertices[0],)
+//}
+
