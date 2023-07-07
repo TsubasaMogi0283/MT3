@@ -83,8 +83,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-
-		
+		if (IsCollision(sphere1LocalCoodinate, sphere2LocalCoodinate) == true) {
+			sphrecolor = RED;
+		}
+		else {
+			sphrecolor = WHITE;;
+		}
 
 
 		///
@@ -97,15 +101,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-
-
-
-
-
-
-
-
-
 
 
 		//Grid
@@ -121,9 +116,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		ImGui::Begin("Sphere");
 		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
-		ImGui::DragFloat3("Sphere2", &sphere2LocalCoodinate.center.x,0.01f);
-		//ImGui::SliderFloat3("Sphere1",)
+		ImGui::DragFloat("Sphere1Radius", &sphere1LocalCoodinate.radius, 0.01f);
+		ImGui::SliderFloat3("Sphere1Center", &sphere1LocalCoodinate.center.x, -2.0f, 2.0f);
+		ImGui::SliderFloat("Sphere1Radius", &sphere1LocalCoodinate.radius, 0.0f, 0.5f);
+		
 
+		ImGui::DragFloat3("Sphere2", &sphere2LocalCoodinate.center.x,0.01f);
+		ImGui::DragFloat("Sphere2Radius", &sphere2LocalCoodinate.radius, 0.01f);
+		ImGui::SliderFloat3("Sphere2Coodenate", &sphere2LocalCoodinate.center.x, -2.0f, 2.0f);
+		ImGui::SliderFloat("Sphere2Radius", &sphere2LocalCoodinate.radius, 0.0f, 0.5f);
+		
 
 		ImGui::End();
 
