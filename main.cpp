@@ -167,46 +167,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 
 
-		Novice::DrawLine(
-			int(start.x),
-			int(start.y),
-			int(end.x),
-			int(end.y), WHITE);
-
-
 #pragma endregion
 
 
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-		
-		
-
 
 		
-
-		//SegmentOrigin
-		Novice::DrawEllipse(
-			int(start.x),
-			int(start.y), 
-			int(50.0f), 
-			int(50.0f), 0.0f, BLUE,kFillModeSolid);
-
-
-		//VectorOについて
-		Novice::DrawLine(
-			int(start.x),
-			int(start.y), 
-			int(pointCoodinate.x), 
-			int(pointCoodinate.y),BLACK);
-	
-		//VectorOについて
-		Novice::DrawEllipse(
-			int(pointCoodinate.x), 
-			int(pointCoodinate.y),
-			50, 50, 0.0f, RED, kFillModeSolid);
-
 
 		//Proj
 		//Localを入れるよ
@@ -214,11 +182,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawSphere({ point,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
 
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("point", &point.x,0.01f);
-		ImGui::DragFloat3("Segment origin", &segment.origin.x,0.01f);
-		ImGui::DragFloat3("Segmen difft", &segment.diff.x,0.01f);
-
-		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		
 		ImGui::End();
 
@@ -232,12 +195,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::End();
 
 
-		ImGui::Begin("Shere");
-		ImGui::DragFloat3("Point", &project.x,0.01f);
-		ImGui::DragFloat3("ClosestPoint", &closestPoint.x,0.01f);
-		ImGui::SliderFloat("Radius", &pointSphere.radius, 0.0f, 0.5f);
-		
-		ImGui::End();
 
 		
 
