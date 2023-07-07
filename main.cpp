@@ -180,7 +180,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-		//赤の方座標がおかしい
 		
 		
 
