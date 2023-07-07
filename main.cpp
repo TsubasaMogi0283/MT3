@@ -122,7 +122,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("Sphere");
 		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
 		ImGui::DragFloat3("Sphere2", &sphere2LocalCoodinate.center.x,0.01f);
-		
+		//ImGui::SliderFloat3("Sphere1",)
 
 
 		ImGui::End();
