@@ -35,21 +35,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	LocalVertics[1] = {0.2f,0.0f,0.0f};
 	
 
-	Vector3 localCoodinate = { 0.0f,0.0f,0.0f };
 
-
-	
-	Segment segment = { {-2.0f,-1.0f,0.1f},{3.0f,2.0f,2.0f} };
-	Vector3 point = { 0.0f,0.6f,0.6f };
-
-	Vector3 project = {};
-	Vector3 closestPoint = {};
-
-	//1cmの球を描画
-	Sphere pointSphere={ point,0.1f };;
-	Sphere closestPointSphere={ closestPoint,0.01f };;
-
-	
+	unsigned int sphrecolor = WHITE;
+	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
+	Sphere sphere2LocalCoodinate = { {1.0f,0.0f,0.5f},0.3f };
 		
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -95,10 +84,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-		//正射影ベクトルと最近接点
-		project = Project(Subtract(point, segment.origin), segment.diff);
-		closestPoint = ClosestPoint(point, segment);
-
+		
 
 
 		///
@@ -121,54 +107,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-#pragma region 線について
-
-		//線分
-		Matrix4x4 WorldMatrixSegmentOrigin = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, segment.origin);
-		Matrix4x4 WorldMatrixSegmentDiff = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, segment.diff);
-
-
-		Matrix4x4 worldViewProjectionMatrixSegmentOrigin = Multiply(WorldMatrixSegmentOrigin, Multiply(viewMatrix, projectionMatrix));
-		Matrix4x4 worldViewProjectionMatrixSegmentDiff = Multiply(WorldMatrixSegmentDiff, Multiply(viewMatrix, projectionMatrix));
-
-
-		Vector3 ndcVerticesSegmentOrigin = Transform(segment.origin, worldViewProjectionMatrixSegmentOrigin);
-		Vector3 ndcVerticesSegmentDiff = Transform(segment.diff, worldViewProjectionMatrixSegmentDiff);
-
-
-		Vector3 start = Transform(ndcVerticesSegmentOrigin, viewportMatrix);
-		Vector3 end = Transform(ndcVerticesSegmentDiff, viewportMatrix);
-
-
-
-		//Point(資料だとP)
-		Matrix4x4 WorldMatrixPoint = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, point);
-
-		Matrix4x4 worldViewProjectionMatrixPoint = Multiply(WorldMatrixPoint, Multiply(viewMatrix, projectionMatrix));
-		
-		Vector3 ndcVerticesPoint = Transform(point, worldViewProjectionMatrixPoint);
-
-		Vector3 pointCoodinate = Transform(ndcVerticesPoint, viewportMatrix);
-
-
-		//Projection
-		Matrix4x4 WorldMatrixProject = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, project);
-		
-		
-		Matrix4x4 worldViewProjectionMatrixProject = Multiply(WorldMatrixProject, Multiply(viewMatrix, projectionMatrix));
-		
-		
-		Vector3 ndcVerticesProject = Transform(project, worldViewProjectionMatrixProject);
-
-		
-		Vector3 projectCoodinate=Transform(Add(ndcVerticesSegmentOrigin, ndcVerticesProject), viewportMatrix);
-		
-		
-		
-
-
-#pragma endregion
-
 
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
@@ -178,11 +116,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//Proj
 		//Localを入れるよ
-		DrawSphere({ segment.diff,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, RED);
-		DrawSphere({ point,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
+		DrawSphere({ sphere1LocalCoodinate.center,sphere1LocalCoodinate.radius }, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
+		DrawSphere({ sphere2LocalCoodinate.center,sphere2LocalCoodinate.radius }, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
 
-		ImGui::Begin("Window");
+		ImGui::Begin("Sphere");
+		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
+		ImGui::DragFloat3("Sphere2", &sphere2LocalCoodinate.center.x,0.01f);
 		
+
+
 		ImGui::End();
 
 

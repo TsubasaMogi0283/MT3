@@ -1065,6 +1065,23 @@ Vector3 ClosestPoint(const Vector3 point, const Segment segment) {
 	return Vector3CP;
 }
 
+//Sphereの当たり判定
+bool IsCollision(const Sphere s1, Sphere s2) {
+	float distance = 0.0f;
+
+	//当たっていたらtrue
+	if (distance < s1.radius + s2.radius) {
+		return true;
+	}
+	//当たってない場合はfalse
+	else{
+		return false;
+	}
+
+
+}
+
+#pragma region Printf
 
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {
 	Novice::ScreenPrintf(x + COLUMN_WIDTH * 0, y, "%6.02f", vector.x);
@@ -1084,3 +1101,5 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4 matrix, const char* string
 		}
 	}
 }
+
+#pragma endregion
