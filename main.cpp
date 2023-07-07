@@ -95,13 +95,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-
-
-
-
-
-
-
 		//正射影ベクトルと最近接点
 		project = Project(Subtract(point, segment.origin), segment.diff);
 		closestPoint = ClosestPoint(point, segment);
@@ -189,7 +182,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//赤の方座標がおかしい
 		
-		//DrawSphere({ projectCoodinate,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, RED);
+		
 
 
 		
@@ -216,16 +209,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			50, 50, 0.0f, RED, kFillModeSolid);
 
 
-		//Projection後のCP
-		Novice::DrawEllipse(
-			int(projectCoodinate.x), 
-			int(projectCoodinate.y),
-			50, 50, 0.0f, GREEN, kFillModeSolid);
-		
-
-
-		DrawSphere({ pointCoodinate,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
-
+		//Proj
+		//Localを入れるよ
+		DrawSphere({ segment.diff,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, RED);
+		DrawSphere({ point,pointSphere.radius }, viewMatrix, projectionMatrix, viewportMatrix, BLACK);
 
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("point", &point.x,0.01f);

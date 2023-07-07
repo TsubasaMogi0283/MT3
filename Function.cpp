@@ -806,9 +806,10 @@ void DrawSphere(
 
 
 			//ab,acに引くよ！
-			Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },Add(a,sphere.center));
-			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},Add(b,sphere.center) );
-			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},Add(c,sphere.center));
+			//SRTだから最後のTは移動ね
+			Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },sphere.center);
+			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},sphere.center );
+			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},sphere.center);
 
 
 			
@@ -823,9 +824,9 @@ void DrawSphere(
 
 
 
-			ndcVerticesA = Transform(Add(a,sphere.center), worldViewProjectionMatrixA);
-			ndcVerticesB = Transform(Add(b,sphere.center), worldViewProjectionMatrixB);
-			ndcVerticesC = Transform(Add(c,sphere.center), worldViewProjectionMatrixC);
+			ndcVerticesA = Transform(a, worldViewProjectionMatrixA);
+			ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
+			ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
 			
 
 
