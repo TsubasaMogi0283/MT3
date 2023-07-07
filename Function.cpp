@@ -1079,8 +1079,17 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 	else{
 		return false;
 	}
+}
 
+bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 
+}
+
+Vector3 Perpendicular(const Vector3 vector) {
+	if (vector.x != 0.0f || vector.y != 0.0f) {
+		return { -vector.y, vector.x, 0.0f };
+	}
+	return { 0.0f,-vector.z,vector.y };
 }
 
 #pragma region Printf
