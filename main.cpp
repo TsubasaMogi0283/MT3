@@ -105,6 +105,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//
 		//screenVerticesStartColumn[xIndex] = Transform(ndcVerticesStartColumn, viewportMatrix);
 		//screenVerticesEndColumn[xIndex] = Transform(ndcVerticesEndColumn, viewportMatrix);
+		if (IsCollisionSpherePlane()) {
+
+		}
 		
 
 		///
