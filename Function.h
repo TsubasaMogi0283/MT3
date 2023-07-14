@@ -83,6 +83,8 @@ Vector3 ClosestPoint(const Vector3 point, const Segment segment);
 
 bool IsCollision(const Sphere s1, Sphere s2);
 
+void SphereAndPlane(const Sphere s1, Plane plane);
+
 bool IsCollisionSpherePlane(const Sphere s1, Plane plane);
 
 Vector3 Perpendicular(const Vector3 vector);

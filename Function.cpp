@@ -1074,6 +1074,7 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 	//2つの中心点間の距離を求める
 	float distance = Length(Subtract(s2.center,s1.center));
 
+
 	//いつものの仕組み
 	//当たっていたらtrue
 	if (distance < s1.radius + s2.radius) {
@@ -1086,9 +1087,42 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 }
 
 //球と平面の当たり判定
-//bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
-//
-//}
+bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
+	////球の中心点
+	Vector3 normalizeN = Normalize(plane.normal);
+	Vector3 vectorKN = {
+		plane.distance * normalizeN.x,
+		plane.distance * normalizeN.y,
+		plane.distance * normalizeN.z };
+
+	////球の中心から平面に降ろした時の点
+	Vector3 vectorQ = Subtract(s1.center,vectorKN );
+
+	Vector3 vectorNC = {
+		normalizeN.x * s1.center.x,
+		normalizeN.y * s1.center.y,
+	normalizeN.z * s1.center.z, };
+
+	Vector3 vectorK = {
+		vectorNC.x - plane.distance,
+		vectorNC.y - plane.distance,
+		vectorNC.z - plane.distance, };
+	float distanceK = Length(vectorK);
+	if (distanceK < s1.radius + plane.distance) {
+		return true;
+	}
+	else {
+		return false;
+	}
+	
+	Novice::DrawLine(
+		int(s1.center.x),
+		int(s1.center.y),
+		int(vectorQ.x),
+		int(vectorQ.y), RED);
+
+
+}
 
 Vector3 Perpendicular(const Vector3 vector) {
 	if (vector.x != 0.0f || vector.y != 0.0f) {

@@ -94,21 +94,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 
 
-		//////ワールドへ
-		//Matrix4x4 worldViewProjectionMatrixStart = Multiply(WorldMatrixStartColumn[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
-		//Matrix4x4 worldViewProjectionMatrixEnd = Multiply(WorldMatrixEndColumn[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
-		//
-		//
-		//ndcVerticesStartColumn = Transform(LocalVerticesStartColumn[xIndex], worldViewProjectionMatrixStart);
-		//ndcVerticesEndColumn = Transform(LocalVerticesEndColumn[xIndex], worldViewProjectionMatrixEnd);
-		//
-		//
-		//screenVerticesStartColumn[xIndex] = Transform(ndcVerticesStartColumn, viewportMatrix);
-		//screenVerticesEndColumn[xIndex] = Transform(ndcVerticesEndColumn, viewportMatrix);
-		if (IsCollisionSpherePlane()) {
-
-		}
 		
+		if (IsCollisionSpherePlane(sphere1LocalCoodinate,planeCoodinate)==true) {
+			sphrecolor = RED;
+		}
+		else{
+			sphrecolor = WHITE;
+		}
 
 		///
 		/// ↑更新処理ここまで
