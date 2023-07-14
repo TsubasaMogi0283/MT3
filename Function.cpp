@@ -1087,7 +1087,9 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 }
 
 
-void SphereAndPlane(const Sphere s1, Plane plane) {
+void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix, 
+	const Matrix4x4& viewProjectionMatrix, 
+	const Matrix4x4& viewportMatrix) {
 	////球の中心点
 	Vector3 normalizeN = Normalize(plane.normal);
 	Vector3 vectorKN = {
@@ -1107,11 +1109,32 @@ void SphereAndPlane(const Sphere s1, Plane plane) {
 		vectorNC.x - plane.distance,
 		vectorNC.y - plane.distance,
 		vectorNC.z - plane.distance, };
-	float distanceK = Length(vectorK);
+
+
+	//ab,acに引くよ！
+	//SRTだから最後のTは移動ね
+	Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },s1.center);
+
+	////ワールドへ
+	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
+	
+
+
+
+	Vector3 ndcVerticesA = Transform(s1.center, worldViewProjectionMatrixA);
+	
+
+
+	Vector3 screenVerticesA = Transform(ndcVerticesA, viewportMatrix);
+
+
+
+	Novice::DrawEllipse(int(screenVerticesA.x), int(screenVerticesA.y), 10, 10, 0.0f, RED, kFillModeSolid);
 
 	Novice::DrawLine(
-		int(s1.center.x),
-		int(s1.center.y),
+		int(screenVerticesA.x),
+		int(screenVerticesA.y),
 		int(vectorQ.x),
 		int(vectorQ.y), RED);
 }

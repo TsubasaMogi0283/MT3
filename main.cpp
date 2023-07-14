@@ -125,7 +125,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawSphere({ sphere1LocalCoodinate.center,sphere1LocalCoodinate.radius }, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
 		
 		DrawPlane(planeCoodinate, worldViewProjectionMatrixPlane, viewportMatrix, WHITE);
-		SphereAndPlane(sphere1LocalCoodinate, planeCoodinate);
+		DrawSphereAndPlane(sphere1LocalCoodinate, planeCoodinate, viewMatrix, projectionMatrix, viewportMatrix);
 
 		ImGui::Begin("Sphere");
 		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
