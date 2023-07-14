@@ -10,7 +10,7 @@ const int WINDOW_SIZE_HEIGHT = 720;
 Vector3 Add(const Vector3 m1, const Vector3 m2);
 Vector3 Subtract(const Vector3 m1, const Vector3 m2);
 
-
+Vector3 Vector3Multiply(const Vector3 v1, const Vector3 v2);
 
 
 //Scale
@@ -86,3 +86,5 @@ bool IsCollision(const Sphere s1, Sphere s2);
 bool IsCollisionSpherePlane(const Sphere s1, Plane plane);
 
 Vector3 Perpendicular(const Vector3 vector);
+
+void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);

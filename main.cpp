@@ -25,7 +25,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//カメラ
 	//Vector3 cameraPosition = { 0.0f,0.0f,-1.0f };
-	Vector3 cameraTranslate = { 0.0f,1.9f,-6.49f };
+	Vector3 cameraTranslate = { 0.0f,3.5f,-9.50f };
 	Vector3 cameraRotate = { 0.26f,0.0f,0.0f };
 
 
@@ -38,8 +38,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	unsigned int sphrecolor = WHITE;
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
-	Sphere sphere2LocalCoodinate = { {1.0f,0.0f,0.5f},0.3f };
-		
+	
+	Plane planeCoodinate = { {0.0f,1.0f,0.1f},1.0f };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -68,6 +68,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//スクリーン座標系
 
 
+		
 #pragma region カメラの計算
 		//計算
 		Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
@@ -84,14 +85,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 
+		//平面用
+		Matrix4x4 worldMatrixPlane = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, planeCoodinate.normal);
+		
+		
+		////ワールドへ
+		Matrix4x4 worldViewProjectionMatrixPlane = Multiply(worldMatrixPlane, Multiply(viewMatrix, projectionMatrix));
+		
 
-		if (IsCollision(sphere1LocalCoodinate, sphere2LocalCoodinate) == true) {
-			sphrecolor = RED;
-		}
-		else {
-			sphrecolor = WHITE;;
-		}
 
+		//////ワールドへ
+		//Matrix4x4 worldViewProjectionMatrixStart = Multiply(WorldMatrixStartColumn[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
+		//Matrix4x4 worldViewProjectionMatrixEnd = Multiply(WorldMatrixEndColumn[xIndex], Multiply(viewMatrix, viewProjectionMatrix));
+		//
+		//
+		//ndcVerticesStartColumn = Transform(LocalVerticesStartColumn[xIndex], worldViewProjectionMatrixStart);
+		//ndcVerticesEndColumn = Transform(LocalVerticesEndColumn[xIndex], worldViewProjectionMatrixEnd);
+		//
+		//
+		//screenVerticesStartColumn[xIndex] = Transform(ndcVerticesStartColumn, viewportMatrix);
+		//screenVerticesEndColumn[xIndex] = Transform(ndcVerticesEndColumn, viewportMatrix);
+		
 
 		///
 		/// ↑更新処理ここまで
@@ -114,7 +128,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Proj
 		//Localを入れるよ
 		DrawSphere({ sphere1LocalCoodinate.center,sphere1LocalCoodinate.radius }, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
-		DrawSphere({ sphere2LocalCoodinate.center,sphere2LocalCoodinate.radius }, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
+		
+		DrawPlane(planeCoodinate, worldViewProjectionMatrixPlane, viewportMatrix, WHITE);
 
 		ImGui::Begin("Sphere");
 		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
@@ -122,14 +137,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SliderFloat3("Sphere1Center", &sphere1LocalCoodinate.center.x, -2.0f, 2.0f);
 		ImGui::SliderFloat("Sphere1Radius", &sphere1LocalCoodinate.radius, 0.0f, 0.5f);
 		
-
-		ImGui::DragFloat3("Sphere2", &sphere2LocalCoodinate.center.x,0.01f);
-		ImGui::DragFloat("Sphere2Radius", &sphere2LocalCoodinate.radius, 0.01f);
-		ImGui::SliderFloat3("Sphere2Coodenate", &sphere2LocalCoodinate.center.x, -2.0f, 2.0f);
-		ImGui::SliderFloat("Sphere2Radius", &sphere2LocalCoodinate.radius, 0.0f, 0.5f);
-		
-
 		ImGui::End();
+
+
+
+		ImGui::Begin("Plane");
+		ImGui::DragFloat3("Plane.Normal", &planeCoodinate.normal.x,0.01f);
+		planeCoodinate.normal = Normalize(planeCoodinate.normal);
+		ImGui::DragFloat("distance", &planeCoodinate.distance, 0.01f);
+		ImGui::End();
+
 
 
 

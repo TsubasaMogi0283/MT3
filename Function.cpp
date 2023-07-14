@@ -30,6 +30,10 @@ Vector3 Subtract(const Vector3 m1, const Vector3 m2) {
 
 }
 
+Vector3 Vector3Multiply(const Vector3 v1, const Vector3 v2) {
+	Vector3 result = {v1.x*v2.x,v1.y*v2.y,v1.z*v2.z};
+	return result;
+}
 
 //Scale
 Matrix4x4 MakeScaleMatrix(const Vector3 scale) {
@@ -1081,15 +1085,120 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 	}
 }
 
-bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
-
-}
+//bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
+//
+//}
 
 Vector3 Perpendicular(const Vector3 vector) {
 	if (vector.x != 0.0f || vector.y != 0.0f) {
 		return { -vector.y, vector.x, 0.0f };
 	}
 	return { 0.0f,-vector.z,vector.y };
+}
+
+
+void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix,unsigned int color) {
+	
+	//1.中心点を決める
+	Vector3 center = { 
+		plane.distance * plane.normal.x,
+		plane.distance * plane.normal.y,
+		plane.distance * plane.normal.z 
+	};
+
+	Vector3 perpendiculars[4];
+	//2.法線と垂直なベクトルを１つを決める
+	perpendiculars[0] = Normalize(Perpendicular(plane.normal));
+	//3.2の逆ベクトルを求める
+	perpendiculars[1] = { -perpendiculars[0].x,-perpendiculars[0].y,-perpendiculars[0].z };
+	//4.2と法線のクロス積を求める
+	perpendiculars[2] = Cross(plane.normal,perpendiculars[0]);
+	//5.4の逆ベクトルを求める
+	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };
+	
+	Vector3 points[4];
+	//6.2-5のベクトルを中心点にそれぞれ定数倍して足すと4頂点が出来上がる
+	
+	for (int32_t index = 0; index < 4; ++index) {
+		Vector3 extend = { 
+			2.0f * perpendiculars[index].x,
+			2.0f * perpendiculars[index].y,
+			2.0f * perpendiculars[index].z 
+		};
+		Vector3 point = Add(center, extend);
+		
+		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
+
+		//Matrix4x4 worldPoints = MakeAffineMatrix( {1.0f,1.0f,1.0f},{1.0f,1.0f,1.0f},point );
+		//
+		//Matrix4x4 worldViewprojectionMatrix = Multiply(worldPoints, Multiply(viewMatrix, viewProjectionMatrix));
+		//
+		//
+		//Vector3 ndcPoints = Transform(point, worldViewprojectionMatrix);
+		//
+		////ndcVerticesStartLine = Transform(LocalVerticesStartLine[zIndex], worldViewProjectionMatrixStartLine);
+		////ndcVerticesEndLine = Transform(LocalVerticesEndLine[zIndex], worldViewProjectionMatrixEndLine);
+		//screenPoints[index] = Transform(ndcPoints, viewportMatrix);
+		
+
+		///points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
+	}
+	
+	//WhiteToBlue
+	Novice::DrawLine(
+		int(points[0].x), 
+		int(points[0].y), 
+		int(points[2].x), 
+		int(points[2].y), color);
+	
+	//BlueToRed
+	Novice::DrawLine(
+		int(points[2].x), 
+		int(points[2].y), 
+		int(points[1].x), 
+		int(points[1].y), color);
+	
+	//RedToGreen
+	Novice::DrawLine(
+		int(points[1].x), 
+		int(points[1].y), 
+		int(points[3].x), 
+		int(points[3].y), color);
+
+	//GreenWhite
+	Novice::DrawLine(
+		int(points[3].x), 
+		int(points[3].y), 
+		int(points[0].x), 
+		int(points[0].y), color);
+
+
+	//頂点0
+	Novice::DrawEllipse(
+		int(points[0].x),
+		int(points[0].y),
+		10, 10, 0.0f, WHITE, kFillModeSolid);
+	
+	//頂点1
+	Novice::DrawEllipse(
+		int(points[1].x),
+		int(points[1].y),
+		10, 10, 0.0f, RED, kFillModeSolid);
+	
+	//頂点3
+	Novice::DrawEllipse(
+		int(points[2].x),
+		int(points[2].y),
+		10, 10, 0.0f, BLUE, kFillModeSolid);
+	
+	//頂点4
+	Novice::DrawEllipse(
+		int(points[3].x),
+		int(points[3].y),
+		10, 10, 0.0f, GREEN, kFillModeSolid);
+	
+
+
 }
 
 #pragma region Printf
