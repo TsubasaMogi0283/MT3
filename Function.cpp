@@ -1085,6 +1085,7 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 	}
 }
 
+//球と平面の当たり判定
 //bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 //
 //}
@@ -1129,21 +1130,17 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 		
 		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
 
-		//Matrix4x4 worldPoints = MakeAffineMatrix( {1.0f,1.0f,1.0f},{1.0f,1.0f,1.0f},point );
-		//
-		//Matrix4x4 worldViewprojectionMatrix = Multiply(worldPoints, Multiply(viewMatrix, viewProjectionMatrix));
-		//
-		//
-		//Vector3 ndcPoints = Transform(point, worldViewprojectionMatrix);
-		//
-		////ndcVerticesStartLine = Transform(LocalVerticesStartLine[zIndex], worldViewProjectionMatrixStartLine);
-		////ndcVerticesEndLine = Transform(LocalVerticesEndLine[zIndex], worldViewProjectionMatrixEndLine);
-		//screenPoints[index] = Transform(ndcPoints, viewportMatrix);
 		
-
-		///points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
 	}
-	
+
+#pragma region 更新デバッグ用
+	Vector3 planeNormalDebug=Transform(Transform(plane.normal, viewProjectionMatrix), viewportMatrix);
+
+#pragma endregion 
+
+
+#pragma region 点をつなぎ合わせる
+
 	//WhiteToBlue
 	Novice::DrawLine(
 		int(points[0].x), 
@@ -1172,7 +1169,9 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 		int(points[0].x), 
 		int(points[0].y), color);
 
+#pragma endregion
 
+#pragma region 描画デバッグ用
 	//頂点0
 	Novice::DrawEllipse(
 		int(points[0].x),
@@ -1196,11 +1195,22 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 		int(points[3].x),
 		int(points[3].y),
 		10, 10, 0.0f, GREEN, kFillModeSolid);
-	
+
+
+	//Center
+	Novice::DrawEllipse(
+		int(planeNormalDebug.x), 
+		int(planeNormalDebug.y), 
+		20, 20, 0.0f, BLACK, kFillModeSolid);
+
+#pragma endregion
 
 
 }
 
+
+
+//ImGUiの方が便利だと思えてきたので消したい・・
 #pragma region Printf
 
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {

@@ -25,7 +25,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//カメラ
 	//Vector3 cameraPosition = { 0.0f,0.0f,-1.0f };
-	Vector3 cameraTranslate = { 0.0f,3.5f,-9.50f };
+	Vector3 cameraTranslate = { 0.0f,3.0f,-9.50f };
 	Vector3 cameraRotate = { 0.26f,0.0f,0.0f };
 
 
