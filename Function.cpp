@@ -1086,6 +1086,36 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 	}
 }
 
+
+void SphereAndPlane(const Sphere s1, Plane plane) {
+	////球の中心点
+	Vector3 normalizeN = Normalize(plane.normal);
+	Vector3 vectorKN = {
+		plane.distance * normalizeN.x,
+		plane.distance * normalizeN.y,
+		plane.distance * normalizeN.z };
+
+	////球の中心から平面に降ろした時の点
+	Vector3 vectorQ = Subtract(s1.center,vectorKN );
+
+	Vector3 vectorNC = {
+		normalizeN.x * s1.center.x,
+		normalizeN.y * s1.center.y,
+	normalizeN.z * s1.center.z, };
+
+	Vector3 vectorK = {
+		vectorNC.x - plane.distance,
+		vectorNC.y - plane.distance,
+		vectorNC.z - plane.distance, };
+	float distanceK = Length(vectorK);
+
+	Novice::DrawLine(
+		int(s1.center.x),
+		int(s1.center.y),
+		int(vectorQ.x),
+		int(vectorQ.y), RED);
+}
+
 //球と平面の当たり判定
 bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 	////球の中心点
@@ -1108,6 +1138,8 @@ bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 		vectorNC.y - plane.distance,
 		vectorNC.z - plane.distance, };
 	float distanceK = Length(vectorK);
+
+
 	if (distanceK < s1.radius + plane.distance) {
 		return true;
 	}
@@ -1115,11 +1147,7 @@ bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 		return false;
 	}
 	
-	Novice::DrawLine(
-		int(s1.center.x),
-		int(s1.center.y),
-		int(vectorQ.x),
-		int(vectorQ.y), RED);
+	
 
 
 }
@@ -1238,6 +1266,8 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 		20, 20, 0.0f, BLACK, kFillModeSolid);
 
 #pragma endregion
+
+
 
 
 }
