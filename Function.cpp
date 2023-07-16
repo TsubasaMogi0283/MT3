@@ -1095,7 +1095,8 @@ void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix
 	Vector3 vectorKN = {
 		plane.distance * normalizeN.x,
 		plane.distance * normalizeN.y,
-		plane.distance * normalizeN.z };
+		plane.distance * normalizeN.z 
+	};
 
 	////球の中心から平面に降ろした時の点
 	Vector3 vectorQ = Subtract(s1.center,vectorKN );
@@ -1108,7 +1109,8 @@ void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix
 	Vector3 vectorK = {
 		vectorNC.x - plane.distance,
 		vectorNC.y - plane.distance,
-		vectorNC.z - plane.distance, };
+		vectorNC.z - plane.distance,
+	};
 
 
 	//ab,acに引くよ！
@@ -1130,40 +1132,24 @@ void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix
 
 
 
-	Novice::DrawEllipse(int(screenVerticesA.x), int(screenVerticesA.y), 10, 10, 0.0f, RED, kFillModeSolid);
+	Novice::DrawEllipse(int(screenVerticesA.x), int(screenVerticesA.y), 10, 10, 0.0f, BLUE, kFillModeSolid);
 
-	Novice::DrawLine(
-		int(screenVerticesA.x),
-		int(screenVerticesA.y),
-		int(vectorQ.x),
-		int(vectorQ.y), RED);
 }
 
 //球と平面の当たり判定
 bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
+	//kを求めたいんですよね・・
+
 	////球の中心点
-	Vector3 normalizeN = Normalize(plane.normal);
-	Vector3 vectorKN = {
-		plane.distance * normalizeN.x,
-		plane.distance * normalizeN.y,
-		plane.distance * normalizeN.z };
+	Vector3 c = s1.center;
+	
+	Vector3 n = Normalize(plane.normal);
 
-	////球の中心から平面に降ろした時の点
-	Vector3 vectorQ = Subtract(s1.center,vectorKN );
-
-	Vector3 vectorNC = {
-		normalizeN.x * s1.center.x,
-		normalizeN.y * s1.center.y,
-	normalizeN.z * s1.center.z, };
-
-	Vector3 vectorK = {
-		vectorNC.x - plane.distance,
-		vectorNC.y - plane.distance,
-		vectorNC.z - plane.distance, };
-	float distanceK = Length(vectorK);
+	float distanceK = DotVector3(n, c) - plane.distance;
+	float distanceKAfter = sqrtf(distanceK);
 
 
-	if (distanceK < s1.radius + plane.distance) {
+	if (distanceKAfter < s1.radius + plane.distance) {
 		return true;
 	}
 	else {
