@@ -825,12 +825,15 @@ void DrawSphere(
 			Vector3 ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
 			Vector3 ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
 			
-
+			Vector3 centerPositionNBC = Transform(sphere.center, worldViewProjectionMatrixA);
 
 			screenVerticesA[latIndex] = Transform(ndcVerticesA, viewportMatrix);
 			screenVerticesB[latIndex] = Transform(ndcVerticesB, viewportMatrix);
 			screenVerticesC[latIndex] = Transform(ndcVerticesC, viewportMatrix);
 
+			Vector3 screenCenter = Transform(centerPositionNBC, viewportMatrix);
+
+			//Novice::DrawEllipse(int(screenCenter.x), int(screenCenter.y), 30, 30, 0.0f, colour, kFillModeSolid);
 
 			//ab
 			Novice::DrawLine(
@@ -990,44 +993,23 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 }
 
 
-void SphereDebug(const Sphere s1,const Matrix4x4& viewMatrix, 
-	const Matrix4x4& viewProjectionMatrix, 
-	const Matrix4x4& viewportMatrix) {
+void Debug(const Sphere s1, Plane plane) {
+	//q=c-kn
+	////球の中心点
+	Vector3 c = s1.center;
+	
+	float d = plane.distance;
+
+	//単位ベクトル
+	Vector3 n = Normalize(plane.normal);
+
+	float k = DotVector3(n, c) - d;
+	float newK = abs(k);
+
+	
 	
 
-
-
-	//ab,acに引くよ！
-	//SRTだから最後のTは移動ね
-	Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },s1.center);
-
-
-	
-
-
-	////ワールドへ
-	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-	Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
-	
-
-
-
-	Vector3 ndcVerticesA = Transform(s1.center, worldViewProjectionMatrixA);
-	
-
-
-	Vector3 screenVerticesA = Transform(ndcVerticesA, viewportMatrix);
-
-
-	Novice::DrawEllipse(
-		int(screenVerticesA.x), 
-		int(screenVerticesA.y), 70, 70, 0.0f, BLUE, kFillModeSolid);
-
-
-
-
-
-
+	Novice::ScreenPrintf(0, 0, "distance : %f", newK);
 }
 
 //球と平面の当たり判定
@@ -1053,7 +1035,8 @@ bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 		return false;
 	}
 	
-	
+
+
 
 
 }
@@ -1085,6 +1068,20 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 	//5.4の逆ベクトルを求める
 	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };
 	
+
+	////ab,acに引くよ！
+	////SRTだから最後のTは移動ね
+	//Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },s1.center);
+	//
+	//////ワールドへ
+	////Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	//Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
+	//
+	//Vector3 ndcVerticesA = Transform(s1.center, worldViewProjectionMatrixA);
+	//
+	//Vector3 screenVerticesA = Transform(ndcVerticesA, viewportMatrix);
+
+
 	Vector3 points[4];
 	//6.2-5のベクトルを中心点にそれぞれ定数倍して足すと4頂点が出来上がる
 	
@@ -1096,6 +1093,9 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 		};
 		Vector3 point = Add(center, extend);
 		
+
+
+
 		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
 
 		
@@ -1178,42 +1178,7 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 
 }
 
-void DrawAABB(const AABB& aabb,const Matrix4x4& viewMatrix,  const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int  color) {
 
-
-	Matrix4x4 worldMatrixMax1 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { aabb.max.x,aabb.max.y,aabb. });
-	Matrix4x4 worldMatrixMin = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },aabb.min);
-
-
-	
-
-
-	////ワールドへ
-	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-	Matrix4x4 worldViewProjectionMatrixMax = Multiply(worldMatrixMax, Multiply(viewMatrix, viewProjectionMatrix));
-	Matrix4x4 worldViewProjectionMatrixMin = Multiply(worldMatrixMin, Multiply(viewMatrix, viewProjectionMatrix));
-	
-
-
-
-	Vector3 ndcMax = Transform(aabb.max, worldViewProjectionMatrixMax);
-	Vector3 ndcMin = Transform(aabb.min, worldViewProjectionMatrixMin);
-	
-
-
-	Vector3 screenMax = Transform(ndcMax, viewportMatrix);
-	Vector3 screenMin = Transform(ndcMin, viewportMatrix);
-
-
-
-	Novice::DrawLine(int(screenMax.x), int(screenMax.y), int(screenMin.x), int(screenMin.y), color);
-
-
-}
-
-//bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2) {
-//
-//}
 
 
 //ImGUiの方が便利だと思えてきたので消したい・・

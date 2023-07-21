@@ -143,7 +143,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-
+		Debug(sphere1LocalCoodinate, planeCoodinate);
 		
 
 		//Proj
@@ -151,8 +151,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawSphere({ sphere1LocalCoodinate}, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
 		
 		DrawPlane(planeCoodinate, worldViewProjectionMatrixPlane, viewportMatrix, WHITE);
-		SphereDebug({ sphere1LocalCoodinate},viewMatrix, projectionMatrix, viewportMatrix);
-		
+		//Debug用
+		//Novice::DrawEllipse(int(screenVerticesStartSphere.x), int(screenVerticesStartSphere.y), 30, 30, 0.0f, BLUE,kFillModeSolid);
 
 		ImGui::Begin("Sphere");
 		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
