@@ -746,10 +746,6 @@ void DrawSphere(
 
 
 
-
-	Vector3 ndcVerticesA = {};
-	Vector3 ndcVerticesB = {};
-	Vector3 ndcVerticesC = {};
 	Vector3 ndcVerticesCenter = {};
 
 
@@ -786,9 +782,6 @@ void DrawSphere(
 			//abがxy平面(theta,lat)
 			Vector3 a, b, c;
 			
-			Vector3 HalfCircleStart,HalfCircleEnd;
-			Vector3 HarfCircleXYStart, HarfCircleXYEnd;
-
 
 			//Local
 			a = {sphere.radius*(cosf(lat) * cosf(lon)),
@@ -816,7 +809,7 @@ void DrawSphere(
 			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},sphere.center);
 
 
-			
+
 
 
 			////ワールドへ
@@ -825,12 +818,12 @@ void DrawSphere(
 			Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
 			Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
 			
+			
 
 
-
-			ndcVerticesA = Transform(a, worldViewProjectionMatrixA);
-			ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
-			ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
+			Vector3 ndcVerticesA = Transform(a, worldViewProjectionMatrixA);
+			Vector3 ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
+			Vector3 ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
 			
 
 
@@ -854,96 +847,6 @@ void DrawSphere(
 				int(screenVerticesC[latIndex].y), colour);
 			
 
-
-
-
-#pragma region 平面で考えたやつ
-
-
-			//xz
-			HalfCircleStart = {
-				sphere.radius * (cosf(lon)),
-				0.0f,
-				sphere.radius * (sinf(lon)) 
-			};
-
-			HalfCircleEnd = {
-				sphere.radius * (cosf(lon+phiD)),
-				0.0f,
-				sphere.radius * (sinf(lon+phiD))
-			};
-
-			//theta
-			HarfCircleXYStart = {
-				sphere.radius * (cosf(lat)),
-				sphere.radius * (sinf(lat)) ,
-				0.0f,
-				
-			};
-			HarfCircleXYEnd= {
-				sphere.radius * (cosf(lat+thetaD)),
-				sphere.radius * (sinf(lat+thetaD)),
-				0.0f,
-				 
-			};
-
-			Matrix4x4 WorldMatrixCircleStart = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleStart );
-			Matrix4x4 WorldMatrixCircleEnd = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleEnd );
-
-			Matrix4x4 WorldMatrixCircleStartXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYStart );
-			Matrix4x4 WorldMatrixCircleEndXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYEnd );
-
-		
-			
-
-
-			
-
-			Matrix4x4 worldViewProjectionMatrixCircleStart = Multiply(WorldMatrixCircleStart, Multiply(viewMatrix, viewProjectionMatrix));
-			Matrix4x4 worldViewProjectionMatrixCircleEnd = Multiply(WorldMatrixCircleEnd, Multiply(viewMatrix, viewProjectionMatrix));
-			
-			Matrix4x4 worldViewProjectionMatrixCircleStartXY = Multiply(WorldMatrixCircleStartXY, Multiply(viewMatrix, viewProjectionMatrix));
-			Matrix4x4 worldViewProjectionMatrixCircleEndXY = Multiply(WorldMatrixCircleEndXY, Multiply(viewMatrix, viewProjectionMatrix));
-			
-
-
-
-
-
-
-			ndcVerticesStart = Transform(HalfCircleStart, worldViewProjectionMatrixCircleStart);
-			ndcVerticesEnd= Transform(HalfCircleEnd, worldViewProjectionMatrixCircleEnd);
-
-			ndcVerticesXYStart = Transform(HarfCircleXYStart, worldViewProjectionMatrixCircleStartXY);
-			ndcVerticesXYEnd= Transform(HarfCircleXYEnd, worldViewProjectionMatrixCircleEndXY);
-
-
-
-			screenVerticesStart[lonIndex] =Transform(ndcVerticesStart, viewportMatrix);
-			screenVerticesEnd[lonIndex] =Transform(ndcVerticesEnd, viewportMatrix);
-
-
-			screenVerticesXYStart[latIndex] =Transform(ndcVerticesXYStart, viewportMatrix);
-			screenVerticesXYEnd[latIndex] =Transform(ndcVerticesXYEnd, viewportMatrix);
-
-
-
-			////xz
-			//Novice::DrawLine(
-			//	int(screenVerticesStart[lonIndex].x), 
-			//	int(screenVerticesStart[lonIndex].y), 
-			//	int(screenVerticesEnd[lonIndex].x), 
-			//	int(screenVerticesEnd[lonIndex].y), colour);
-			//
-			////xy
-			//Novice::DrawLine(
-			//	int(screenVerticesXYStart[latIndex].x), 
-			//	int(screenVerticesXYStart[latIndex].y), 
-			//	int(screenVerticesXYEnd[latIndex].x), 
-			//	int(screenVerticesXYEnd[latIndex].y), colour);
-
-
-#pragma endregion
 
 
 
@@ -1087,35 +990,20 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 }
 
 
-void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix, 
+void SphereDebug(const Sphere s1,const Matrix4x4& viewMatrix, 
 	const Matrix4x4& viewProjectionMatrix, 
 	const Matrix4x4& viewportMatrix) {
-	////球の中心点
-	Vector3 normalizeN = Normalize(plane.normal);
-	Vector3 vectorKN = {
-		plane.distance * normalizeN.x,
-		plane.distance * normalizeN.y,
-		plane.distance * normalizeN.z 
-	};
+	
 
-	////球の中心から平面に降ろした時の点
-	Vector3 vectorQ = Subtract(s1.center,vectorKN );
-
-	Vector3 vectorNC = {
-		normalizeN.x * s1.center.x,
-		normalizeN.y * s1.center.y,
-	normalizeN.z * s1.center.z, };
-
-	Vector3 vectorK = {
-		vectorNC.x - plane.distance,
-		vectorNC.y - plane.distance,
-		vectorNC.z - plane.distance,
-	};
 
 
 	//ab,acに引くよ！
 	//SRTだから最後のTは移動ね
 	Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },s1.center);
+
+
+	
+
 
 	////ワールドへ
 	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
@@ -1131,8 +1019,14 @@ void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix
 	Vector3 screenVerticesA = Transform(ndcVerticesA, viewportMatrix);
 
 
+	Novice::DrawEllipse(
+		int(screenVerticesA.x), 
+		int(screenVerticesA.y), 70, 70, 0.0f, BLUE, kFillModeSolid);
 
-	Novice::DrawEllipse(int(screenVerticesA.x), int(screenVerticesA.y), 10, 10, 0.0f, BLUE, kFillModeSolid);
+
+
+
+
 
 }
 
@@ -1140,16 +1034,19 @@ void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix
 bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 	//kを求めたいんですよね・・
 
+	//q=c-kn
 	////球の中心点
 	Vector3 c = s1.center;
 	
+	float d = plane.distance;
+
+	//単位ベクトル
 	Vector3 n = Normalize(plane.normal);
 
-	float distanceK = DotVector3(n, c) - plane.distance;
-	float distanceKAfter = sqrtf(distanceK);
+	float k = DotVector3(n, c) - d;
+	float newK = abs(k);
 
-
-	if (distanceKAfter < s1.radius + plane.distance) {
+	if (newK < s1.radius) {
 		return true;
 	}
 	else {
@@ -1268,11 +1165,11 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 		10, 10, 0.0f, GREEN, kFillModeSolid);
 
 
-	//Center
-	Novice::DrawEllipse(
-		int(planeNormalDebug.x), 
-		int(planeNormalDebug.y), 
-		20, 20, 0.0f, BLACK, kFillModeSolid);
+	////Center
+	//Novice::DrawEllipse(
+	//	int(planeNormalDebug.x), 
+	//	int(planeNormalDebug.y), 
+	//	20, 20, 0.0f, BLACK, kFillModeSolid);
 
 #pragma endregion
 

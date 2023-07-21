@@ -83,7 +83,7 @@ Vector3 ClosestPoint(const Vector3 point, const Segment segment);
 
 bool IsCollision(const Sphere s1, Sphere s2);
 
-void DrawSphereAndPlane(const Sphere s1, Plane plane,const Matrix4x4& viewMatrix, 
+void SphereDebug(const Sphere s1,const Matrix4x4& viewMatrix, 
 	const Matrix4x4& viewProjectionMatrix, 
 	const Matrix4x4& viewportMatrix);
 

@@ -3,6 +3,7 @@
 #include <Vector3.h>
 #include <cstdint>
 #include <imgui.h>
+#include <corecrt_math.h>
 
 const char kWindowTitle[] = "LE2B_26_モギ_ツバサ_MT3_01_02_確認課題";
 
@@ -35,7 +36,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	LocalVertics[1] = {0.2f,0.0f,0.0f};
 	
 
-
 	unsigned int sphrecolor = WHITE;
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
 	
@@ -67,7 +67,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//      ↓
 		//スクリーン座標系
 
-
 		
 #pragma region カメラの計算
 		//計算
@@ -85,14 +84,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 
+		
+#pragma region 球
+
+
+		Matrix4x4 worldMatrixStartSphere = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, sphere1LocalCoodinate.center);
+		
+
+		Matrix4x4 worldViewProjectionMatrixStartSphere = Multiply(worldMatrixStartSphere, Multiply(viewMatrix, projectionMatrix));
+		
+
+		Vector3 ndcVerticesStartSphere = Transform(sphere1LocalCoodinate.center,worldViewProjectionMatrixStartSphere );
+		
+
+		Vector3 screenVerticesStartSphere= Transform(ndcVerticesStartSphere, viewportMatrix);
+		
+
+#pragma endregion
+
 		//平面用
 		Matrix4x4 worldMatrixPlane = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, planeCoodinate.normal);
 		
 		
 		////ワールドへ
 		Matrix4x4 worldViewProjectionMatrixPlane = Multiply(worldMatrixPlane, Multiply(viewMatrix, projectionMatrix));
+
+
+		Vector3 ndcVerticesStartPlane = Transform(planeCoodinate.normal,worldViewProjectionMatrixPlane );
 		
 
+		Vector3 screenVerticesStartPlane= Transform(ndcVerticesStartPlane, viewportMatrix);
+		
 
 		
 		if (IsCollisionSpherePlane(sphere1LocalCoodinate,planeCoodinate)==true) {
@@ -102,6 +124,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			sphrecolor = WHITE;
 		}
 
+
+		//ImGui::DragFloat3("Plane.Normal", &planeCoodinate.normal.x, 0.01f);
+		//planeCoodinate.normal = Normalize(planeCoodinate.normal);
+		
 		///
 		/// ↑更新処理ここまで
 		///
@@ -122,10 +148,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//Proj
 		//Localを入れるよ
-		DrawSphere({ sphere1LocalCoodinate.center,sphere1LocalCoodinate.radius }, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
+		DrawSphere({ sphere1LocalCoodinate}, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
 		
 		DrawPlane(planeCoodinate, worldViewProjectionMatrixPlane, viewportMatrix, WHITE);
-		DrawSphereAndPlane(sphere1LocalCoodinate, planeCoodinate, viewMatrix, projectionMatrix, viewportMatrix);
+		SphereDebug({ sphere1LocalCoodinate},viewMatrix, projectionMatrix, viewportMatrix);
+		
 
 		ImGui::Begin("Sphere");
 		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
