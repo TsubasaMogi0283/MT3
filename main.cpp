@@ -41,6 +41,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 	Plane planeCoodinate = { {0.0f,1.0f,0.1f},1.0f };
 
+	Segment segment1 = { {-0.450f,0.330f,0.000f},{1.00f,0.580f,0.00f} };
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
