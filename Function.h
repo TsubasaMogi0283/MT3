@@ -92,3 +92,9 @@ bool IsCollisionSpherePlane(const Sphere s1, Plane plane);
 Vector3 Perpendicular(const Vector3 vector);
 
 void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
+
+
+
+void DrawAABB(const AABB& aabb,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
+
+bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2);

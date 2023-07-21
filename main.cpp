@@ -36,12 +36,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	LocalVertics[1] = {0.2f,0.0f,0.0f};
 	
 
-	unsigned int sphrecolor = WHITE;
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
 	
 	Plane planeCoodinate = { {0.0f,1.0f,0.1f},1.0f };
 
-	Segment segment1 = { {-0.450f,0.330f,0.000f},{1.00f,0.580f,0.00f} };
+
+	AABB aabb1 = { .min{-0.5f,-0.5f,-0.5f},.max{0.0f,0.0f,0.1f} };
+	AABB aabb2 = { .min{-0.2f,-0.2f,-0.2f},.max{1.0f,1.0f,1.0f} };
+
+
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -85,50 +88,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 
-		
-#pragma region 球
-
-
-		Matrix4x4 worldMatrixStartSphere = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, sphere1LocalCoodinate.center);
-		
-
-		Matrix4x4 worldViewProjectionMatrixStartSphere = Multiply(worldMatrixStartSphere, Multiply(viewMatrix, projectionMatrix));
-		
-
-		Vector3 ndcVerticesStartSphere = Transform(sphere1LocalCoodinate.center,worldViewProjectionMatrixStartSphere );
-		
-
-		Vector3 screenVerticesStartSphere= Transform(ndcVerticesStartSphere, viewportMatrix);
-		
-
-#pragma endregion
-
-		//平面用
-		Matrix4x4 worldMatrixPlane = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, planeCoodinate.normal);
-		
-		
-		////ワールドへ
-		Matrix4x4 worldViewProjectionMatrixPlane = Multiply(worldMatrixPlane, Multiply(viewMatrix, projectionMatrix));
-
-
-		Vector3 ndcVerticesStartPlane = Transform(planeCoodinate.normal,worldViewProjectionMatrixPlane );
-		
-
-		Vector3 screenVerticesStartPlane= Transform(ndcVerticesStartPlane, viewportMatrix);
-		
-
-		
-		if (IsCollisionSpherePlane(sphere1LocalCoodinate,planeCoodinate)==true) {
-			sphrecolor = RED;
-		}
-		else{
-			sphrecolor = WHITE;
-		}
-
-
-		//ImGui::DragFloat3("Plane.Normal", &planeCoodinate.normal.x, 0.01f);
-		//planeCoodinate.normal = Normalize(planeCoodinate.normal);
-		
 		///
 		/// ↑更新処理ここまで
 		///
@@ -144,34 +103,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-
+		DrawAABB(aabb1, viewMatrix,projectionMatrix, viewportMatrix, RED);
 		
 
 		//Proj
 		//Localを入れるよ
-		DrawSphere({ sphere1LocalCoodinate}, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
 		
-		DrawPlane(planeCoodinate, worldViewProjectionMatrixPlane, viewportMatrix, WHITE);
-		SphereDebug({ sphere1LocalCoodinate},viewMatrix, projectionMatrix, viewportMatrix);
-		
+		ImGui::Begin("AABB");
+		ImGui::DragFloat3("aabb1Max", &aabb1.max.x, 0.01f);
+		ImGui::DragFloat3("aabb1Min", &aabb1.min.x, 0.01f);
 
-		ImGui::Begin("Sphere");
-		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
-		ImGui::DragFloat("Sphere1Radius", &sphere1LocalCoodinate.radius, 0.01f);
-		ImGui::SliderFloat3("Sphere1Center", &sphere1LocalCoodinate.center.x, -2.0f, 2.0f);
-		ImGui::SliderFloat("Sphere1Radius", &sphere1LocalCoodinate.radius, 0.0f, 0.5f);
-		
+		ImGui::DragFloat3("aabb2Max", &aabb2.max.x, 0.01f);
+		ImGui::DragFloat3("aabb2Min", &aabb2.min.x, 0.01f);
+
 		ImGui::End();
-
-
-
-		ImGui::Begin("Plane");
-		ImGui::DragFloat3("Plane.Normal", &planeCoodinate.normal.x,0.01f);
-		planeCoodinate.normal = Normalize(planeCoodinate.normal);
-		ImGui::DragFloat("distance", &planeCoodinate.distance, 0.01f);
-		ImGui::End();
-
-
 
 
 
