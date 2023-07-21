@@ -1178,6 +1178,42 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 
 }
 
+void DrawAABB(const AABB& aabb,const Matrix4x4& viewMatrix,  const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int  color) {
+
+
+	Matrix4x4 worldMatrixMax1 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { aabb.max.x,aabb.max.y,aabb. });
+	Matrix4x4 worldMatrixMin = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },aabb.min);
+
+
+	
+
+
+	////ワールドへ
+	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	Matrix4x4 worldViewProjectionMatrixMax = Multiply(worldMatrixMax, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionMatrixMin = Multiply(worldMatrixMin, Multiply(viewMatrix, viewProjectionMatrix));
+	
+
+
+
+	Vector3 ndcMax = Transform(aabb.max, worldViewProjectionMatrixMax);
+	Vector3 ndcMin = Transform(aabb.min, worldViewProjectionMatrixMin);
+	
+
+
+	Vector3 screenMax = Transform(ndcMax, viewportMatrix);
+	Vector3 screenMin = Transform(ndcMin, viewportMatrix);
+
+
+
+	Novice::DrawLine(int(screenMax.x), int(screenMax.y), int(screenMin.x), int(screenMin.y), color);
+
+
+}
+
+//bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2) {
+//
+//}
 
 
 //ImGUiの方が便利だと思えてきたので消したい・・
