@@ -1208,11 +1208,7 @@ void DrawAABB(const AABB& aabb,const Matrix4x4& viewMatrix,  const Matrix4x4& vi
 
 
 
-	Novice::DrawEllipse(
-		int(screenMax.x), 
-		int(screenMax.y), 70, 70, 0.0f, color, kFillModeSolid);
-
-
+	Novice::DrawLine(int(screenMax.x), int(screenMax.y), int(screenMin.x), int(screenMin.y), color);
 
 
 }
