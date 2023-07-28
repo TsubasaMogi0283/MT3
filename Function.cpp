@@ -980,7 +980,6 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 	//2つの中心点間の距離を求める
 	float distance = Length(Subtract(s2.center,s1.center));
 
-
 	//いつものの仕組み
 	//当たっていたらtrue
 	if (distance < s1.radius + s2.radius) {
