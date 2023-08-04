@@ -992,32 +992,7 @@ bool IsCollision(const Sphere s1, Sphere s2) {
 }
 
 
-void Debug(const Sphere s1, Plane plane) {
-	//q=c-kn
-	////球の中心点
-	Vector3 c = s1.center;
-	
-	float d = plane.distance;
 
-	//単位ベクトル
-	Vector3 n = Normalize(plane.normal);
-
-	float k = abs(DotVector3(n, c) - d);
-
-	//Vector3 kn = { n.x * k,n.y * k,n.z * z };
-	//Vector3 q = Subtract(c, kn);
-
-
-
-	// Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
-
-
-
-
-
-
-	Novice::ScreenPrintf(0, 0, "distance : %f", k);
-}
 
 //球と平面の当たり判定
 bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
@@ -1056,7 +1031,7 @@ Vector3 Perpendicular(const Vector3 vector) {
 }
 
 
-void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix,unsigned int color) {
+void DrawPlane(const Plane plane,const Matrix4x4& viewMatrix,const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix,unsigned int color) {
 	
 	//1.中心点を決める
 	Vector3 center = { 
@@ -1076,60 +1051,83 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };
 	
 
-	Vector3 points[4];
-	//6.2-5のベクトルを中心点にそれぞれ定数倍して足すと4頂点が出来上がる
 	
+	//6.2-5のベクトルを中心点にそれぞれ定数倍して足すと4頂点が出来上がる
+	//Vector3 points[4] = {};
+	Vector3 extend[4] = {};
+	Vector3 point[4] = {};
+	//Vector3 points2[4] = {};
+
+	Matrix4x4 worldPoints[4] = {};
+	Matrix4x4 worldViewProjectionPoints[4] = {};
+
+	Vector3 ndcPoints[4] = {};
+	Vector3 screenPoints[4] = {};
+
 	for (int32_t index = 0; index < 4; ++index) {
-		Vector3 extend = { 
+		extend[index] = {
 			2.0f * perpendiculars[index].x,
 			2.0f * perpendiculars[index].y,
 			2.0f * perpendiculars[index].z 
 		};
-		Vector3 point = Add(center, extend);
+		point[index] = Add(center, extend[index]);
 		
 
 
 
-		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
+		//points2[index] = Transform(Transform(point[index], viewProjectionMatrix), viewportMatrix);
+
+		//ab,acに引くよ！
+		//SRTだから最後のTは移動ね
+		worldPoints[index] = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, point[index]);
+
+		////ワールドへ
+		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+		worldViewProjectionPoints [index] = Multiply(worldPoints[index], Multiply(viewMatrix, viewProjectionMatrix));
+		
+
+		ndcPoints[index] = Transform(point[index], worldViewProjectionPoints[index]);
+			
+		screenPoints[index] = Transform(ndcPoints[index] , viewportMatrix);
+
+
 
 		
 	}
 
-#pragma region 更新デバッグ用
-	Vector3 planeNormalDebug=Transform(Transform(plane.normal, viewProjectionMatrix), viewportMatrix);
-
-#pragma endregion 
 
 
 #pragma region 点をつなぎ合わせる
 
+	const float offset = 0.0f;
+
 	//WhiteToBlue
 	Novice::DrawLine(
-		int(points[0].x), 
-		int(points[0].y), 
-		int(points[2].x), 
-		int(points[2].y), color);
+		int(screenPoints[0].x), 
+		int(screenPoints[0].y+offset), 
+		int(screenPoints[2].x), 
+		int(screenPoints[2].y+offset), color);
 	
 	//BlueToRed
 	Novice::DrawLine(
-		int(points[2].x), 
-		int(points[2].y), 
-		int(points[1].x), 
-		int(points[1].y), color);
+		int(screenPoints[2].x), 
+		int(screenPoints[2].y+offset), 
+		int(screenPoints[1].x), 
+		int(screenPoints[1].y+offset), color);
 	
 	//RedToGreen
 	Novice::DrawLine(
-		int(points[1].x), 
-		int(points[1].y), 
-		int(points[3].x), 
-		int(points[3].y), color);
+		int(screenPoints[1].x), 
+		int(screenPoints[1].y+offset), 
+		int(screenPoints[3].x), 
+		int(screenPoints[3].y+offset), color);
 
 	//GreenWhite
 	Novice::DrawLine(
-		int(points[3].x), 
-		int(points[3].y), 
-		int(points[0].x), 
-		int(points[0].y), color);
+		int(screenPoints[3].x), 
+		int(screenPoints[3].y+offset), 
+		int(screenPoints[0].x), 
+		int(screenPoints[0].y+offset), color);
 
 #pragma endregion
 
@@ -1138,35 +1136,35 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 
 
 	//頂点0
-	Novice::DrawEllipse(
-		int(points[0].x),
-		int(points[0].y),
-		10, 10, 0.0f, WHITE, kFillModeSolid);
-	
-	//頂点1
-	Novice::DrawEllipse(
-		int(points[1].x),
-		int(points[1].y),
-		10, 10, 0.0f, RED, kFillModeSolid);
-	
-	//頂点3
-	Novice::DrawEllipse(
-		int(points[2].x),
-		int(points[2].y),
-		10, 10, 0.0f, BLUE, kFillModeSolid);
-	
-	//頂点4
-	Novice::DrawEllipse(
-		int(points[3].x),
-		int(points[3].y),
-		10, 10, 0.0f, GREEN, kFillModeSolid);
+	//Novice::DrawEllipse(
+	//	int(points2[0].x),
+	//	int(points2[0].y),
+	//	10, 10, 0.0f, WHITE, kFillModeSolid);
+	//
+	////頂点1
+	//Novice::DrawEllipse(
+	//	int(points2[1].x),
+	//	int(points2[1].y),
+	//	10, 10, 0.0f, RED, kFillModeSolid);
+	//
+	////頂点3
+	//Novice::DrawEllipse(
+	//	int(points2[2].x),
+	//	int(points2[2].y),
+	//	10, 10, 0.0f, BLUE, kFillModeSolid);
+	//
+	////頂点4
+	//Novice::DrawEllipse(
+	//	int(points2[3].x),
+	//	int(points2[3].y),
+	//	10, 10, 0.0f, GREEN, kFillModeSolid);
 
 
 	////Center
-	Novice::DrawEllipse(
-		int(planeNormalDebug.x), 
-		int(planeNormalDebug.y), 
-		20, 20, 0.0f, BLACK, kFillModeSolid);
+	//Novice::DrawEllipse(
+	//	int(planeNormalDebug.x), 
+	//	int(planeNormalDebug.y), 
+	//	20, 20, 0.0f, BLACK, kFillModeSolid);
 
 #pragma endregion
 

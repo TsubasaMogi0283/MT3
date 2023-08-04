@@ -26,8 +26,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//カメラ
 	//Vector3 cameraPosition = { 0.0f,0.0f,-1.0f };
-	Vector3 cameraTranslate = { 0.0f,3.0f,-9.50f };
-	Vector3 cameraRotate = { 0.26f,0.0f,0.0f };
+	Vector3 cameraTranslate = { 0.0f,0.0f,-9.50f };
+	Vector3 cameraRotate = { 0.0f,0.0f,0.0f };
 
 
 	//ローカル
@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	unsigned int sphrecolor = WHITE;
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
 	
-	Plane planeCoodinate = { {0.0f,1.0f,0.1f},1.0f };
+	Plane planeCoodinate = { {0.0f,1.0f,0.001f},0.0f };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -105,16 +105,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//平面用
 		Matrix4x4 worldMatrixPlane = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, planeCoodinate.normal);
 		
-		
-		////ワールドへ
-		Matrix4x4 worldViewProjectionMatrixPlane = Multiply(worldMatrixPlane, Multiply(viewMatrix, projectionMatrix));
-
-
-		Vector3 ndcVerticesStartPlane = Transform(planeCoodinate.normal,worldViewProjectionMatrixPlane );
-		
-
-		Vector3 screenVerticesStartPlane= Transform(ndcVerticesStartPlane, viewportMatrix);
-		
 
 		
 		if (IsCollisionSpherePlane(sphere1LocalCoodinate,planeCoodinate)==true) {
@@ -143,14 +133,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-		Debug(sphere1LocalCoodinate, planeCoodinate);
-		
 
 		//Proj
 		//Localを入れるよ
 		DrawSphere({ sphere1LocalCoodinate}, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
 		
-		DrawPlane(planeCoodinate, worldViewProjectionMatrixPlane, viewportMatrix, WHITE);
+		DrawPlane(planeCoodinate,viewMatrix, projectionMatrix, viewportMatrix, WHITE);
 		//Debug用
 		//Novice::DrawEllipse(int(screenVerticesStartSphere.x), int(screenVerticesStartSphere.y), 30, 30, 0.0f, BLUE,kFillModeSolid);
 
