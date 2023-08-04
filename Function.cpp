@@ -1002,13 +1002,21 @@ void Debug(const Sphere s1, Plane plane) {
 	//単位ベクトル
 	Vector3 n = Normalize(plane.normal);
 
-	float k = DotVector3(n, c) - d;
-	float newK = abs(k);
+	float k = abs(DotVector3(n, c) - d);
 
-	
-	
+	//Vector3 kn = { n.x * k,n.y * k,n.z * z };
+	//Vector3 q = Subtract(c, kn);
 
-	Novice::ScreenPrintf(0, 0, "distance : %f", newK);
+
+
+	// Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
+
+
+
+
+
+
+	Novice::ScreenPrintf(0, 0, "distance : %f", k);
 }
 
 //球と平面の当たり判定
@@ -1024,10 +1032,10 @@ bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
 	//単位ベクトル
 	Vector3 n = Normalize(plane.normal);
 
-	float k = DotVector3(n, c) - d;
-	float newK = abs(k);
+	float k = abs(DotVector3(n, c) - d);
+	
 
-	if (newK < s1.radius) {
+	if (k < s1.radius) {
 		return true;
 	}
 	else {
@@ -1067,19 +1075,6 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 	//5.4の逆ベクトルを求める
 	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };
 	
-
-	////ab,acに引くよ！
-	////SRTだから最後のTは移動ね
-	//Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },s1.center);
-	//
-	//////ワールドへ
-	////Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-	//Matrix4x4 worldViewProjectionMatrixA = Multiply(WorldMatrixA, Multiply(viewMatrix, viewProjectionMatrix));
-	//
-	//Vector3 ndcVerticesA = Transform(s1.center, worldViewProjectionMatrixA);
-	//
-	//Vector3 screenVerticesA = Transform(ndcVerticesA, viewportMatrix);
-
 
 	Vector3 points[4];
 	//6.2-5のベクトルを中心点にそれぞれ定数倍して足すと4頂点が出来上がる
@@ -1139,6 +1134,9 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 #pragma endregion
 
 #pragma region 描画デバッグ用
+
+
+
 	//頂点0
 	Novice::DrawEllipse(
 		int(points[0].x),
@@ -1165,10 +1163,10 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 
 
 	////Center
-	//Novice::DrawEllipse(
-	//	int(planeNormalDebug.x), 
-	//	int(planeNormalDebug.y), 
-	//	20, 20, 0.0f, BLACK, kFillModeSolid);
+	Novice::DrawEllipse(
+		int(planeNormalDebug.x), 
+		int(planeNormalDebug.y), 
+		20, 20, 0.0f, BLACK, kFillModeSolid);
 
 #pragma endregion
 

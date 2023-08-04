@@ -87,6 +87,5 @@ bool IsCollisionSpherePlane(const Sphere s1, Plane plane);
 
 Vector3 Perpendicular(const Vector3 vector);
 
-void Debug(const Sphere s1, Plane plane);
 
 void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
