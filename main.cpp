@@ -91,6 +91,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
+		DrawPlane()
+
 		DrawTriangle(triangle, viewMatrix, projectionMatrix, viewportMatrix, WHITE);
 		
 		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, segmentColor);

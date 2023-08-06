@@ -1268,18 +1268,34 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const M
 }
 
 //三角形と線分の当たる判定
-//bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& triangle) {
-//
-//
-//	Vector3 o = segment.origin;
-//	Vector3 b = segment.diff;
-//
-//
-//	//クロス積を使うよ
-//	//Vector3 cross01=Cross(triangle.vertices->x)
-//
-//
-//}
+bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& triangle) {
+
+	//資料通りだと上が0になっている
+	//違和感ある書き方だけど気にしないでね
+	//上
+	Vector3 v0 = triangle.vertex2;
+	//右
+	Vector3 v1 = triangle.vertex3;
+	//左
+	Vector3 v2 = triangle.vertex1;
+
+
+
+	//それぞれを結ぶ
+	Vector3 v01 = Subtract(v1, v0);
+	Vector3 v12 = Subtract(v2, v1);
+	Vector3 v20 = Subtract(v0, v2);
+
+
+	Vector3 o = segment.origin;
+	Vector3 b = segment.diff;
+
+
+	//クロス積を使うよ
+	//Vector3 cross01=Cross(triangle.vertices->x)
+
+
+}
 
 
 
