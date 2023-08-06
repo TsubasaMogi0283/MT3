@@ -1203,6 +1203,7 @@ bool IsColliionPlaneSegment(const Segment& segment, const Plane& plane) {
 	}
 
 
+
 	//tを求める
 	float t = (d - DotVector3(o, n)) / bn;
 
