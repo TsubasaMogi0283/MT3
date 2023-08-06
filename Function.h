@@ -97,7 +97,10 @@ bool IsColliionPlaneSegment(const Segment& segment, const Plane& plane);
 //線分の描画
 void DrawSegment(const Segment& segment, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
 
+//三角形の描画
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
 
-
+//三角形と線分の当たる判定
+bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& triangle);
 
 

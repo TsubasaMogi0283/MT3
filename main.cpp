@@ -26,8 +26,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//カメラ
 	//Vector3 cameraPosition = { 0.0f,0.0f,-1.0f };
-	Vector3 cameraTranslate = { 0.0f,0.8f,-9.50f };
-	Vector3 cameraRotate = { 0.0f,0.0f,0.0f };
+	Vector3 cameraTranslate = { 0.0f,3.5f,-9.50f };
+	Vector3 cameraRotate = { 0.30f,0.0f,0.0f };
 
 
 	//ローカル
@@ -39,8 +39,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	unsigned int segmentColor = WHITE;
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
 	
-	Plane planeCoodinate = { {0.0f,1.0f,0.001f},0.0f };
 	Segment segment = { {0.45f,0.78f,0.0f},{1.0f,0.58f,0.0f} };
+
+	//左下、上、右下
+	Triangle triangle = { {-1.0f,0.0f,0.0f},{0.0f,1.0f,0.0f},{1.0f,0.0f,0.0f} };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -72,16 +74,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 
-		
-
-		
-		if (IsColliionPlaneSegment(segment,planeCoodinate)==true) {
-			segmentColor = RED;
-		}
-		else{
-			segmentColor = WHITE;
-		}
-
 
 		
 		///
@@ -99,24 +91,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-		DrawPlane(planeCoodinate,viewMatrix, projectionMatrix, viewportMatrix, WHITE);
+		DrawTriangle(triangle, viewMatrix, projectionMatrix, viewportMatrix, WHITE);
+		
 		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, segmentColor);
 
 
 
 
 
-		ImGui::Begin("Plane");
-		ImGui::DragFloat3("Plane.Normal", &planeCoodinate.normal.x,0.01f);
-		planeCoodinate.normal = Normalize(planeCoodinate.normal);
-		ImGui::DragFloat("distance", &planeCoodinate.distance, 0.01f);
-		ImGui::End();
-
-
 		ImGui::Begin("Segment");
 		ImGui::DragFloat3("Origin", &segment.origin.x, 0.01f);
 		ImGui::DragFloat3("Diff", &segment.diff.x, 0.01f);
 		ImGui::End();
+
+		ImGui::Begin("Triangle");
+		ImGui::DragFloat3("v1", &triangle.vertex1.x, 0.01f);
+		ImGui::DragFloat3("v2", &triangle.vertex2.x, 0.01f);
+		ImGui::DragFloat3("v3", &triangle.vertex3.x, 0.01f);
+
+		ImGui::End();
+
 
 
 		ImGui::Begin("Camera");

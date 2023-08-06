@@ -1221,6 +1221,69 @@ bool IsColliionPlaneSegment(const Segment& segment, const Plane& plane) {
 
 
 
+
+
+//三角形の描画
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
+
+	Vector3 localv1 = triangle.vertex1;
+	Vector3 localv2 = triangle.vertex2;
+	Vector3 localv3 = triangle.vertex3;
+
+	//ワールド
+	Matrix4x4 worldv1 = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localv1);
+	Matrix4x4 worldv2 = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localv2);
+	Matrix4x4 worldv3 = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localv3);
+
+
+
+
+	Matrix4x4 worldViewProjectionv1 = Multiply(worldv1, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionv2 = Multiply(worldv2, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionv3 = Multiply(worldv3, Multiply(viewMatrix, viewProjectionMatrix));
+	
+
+
+
+	Vector3 ndcv1 = Transform(localv1, worldViewProjectionv1);
+	Vector3 ndcv2 = Transform(localv2, worldViewProjectionv2);
+	Vector3 ndcv3 = Transform(localv3, worldViewProjectionv3);
+
+
+	
+	Vector3 screenv1 = Transform(ndcv1 , viewportMatrix);
+	Vector3 screenv2 = Transform(ndcv2 , viewportMatrix);
+	Vector3 screenv3 = Transform(ndcv3 , viewportMatrix);
+
+
+	Novice::DrawTriangle(
+		int(screenv1.x), 
+		int(screenv1.y), 
+		int(screenv2.x), 
+		int(screenv2.y), 
+		int(screenv3.x), 
+		int(screenv3.y), color, kFillModeWireFrame);
+
+
+}
+
+//三角形と線分の当たる判定
+//bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& triangle) {
+//
+//
+//	Vector3 o = segment.origin;
+//	Vector3 b = segment.diff;
+//
+//
+//	//クロス積を使うよ
+//	//Vector3 cross01=Cross(triangle.vertices->x)
+//
+//
+//}
+
+
+
+
 //ImGUiの方が便利だと思えてきたので消したい・・
 #pragma region Printf
 

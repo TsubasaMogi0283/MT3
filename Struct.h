@@ -38,4 +38,13 @@ struct Plane {
 	float distance; //距離
 };
 
+//三角形
+struct Triangle {
+	Vector3 vertex1;
+	Vector3 vertex2;
+	Vector3 vertex3;
+
+};
+
+
 
