@@ -89,3 +89,15 @@ Vector3 Perpendicular(const Vector3 vector);
 
 
 void DrawPlane(const Plane plane,const Matrix4x4& viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
+
+
+//線と平面の衝突判定
+bool IsColliionPlaneSegment(const Segment& segment, const Plane& plane);
+
+//線分の描画
+void DrawSegment(const Segment& segment, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
+
+
+
+
+

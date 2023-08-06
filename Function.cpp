@@ -1132,48 +1132,91 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewMatrix,const Matrix4x4& vi
 
 #pragma endregion
 
-#pragma region 描画デバッグ用
-
-
-
-	//頂点0
-	//Novice::DrawEllipse(
-	//	int(points2[0].x),
-	//	int(points2[0].y),
-	//	10, 10, 0.0f, WHITE, kFillModeSolid);
-	//
-	////頂点1
-	//Novice::DrawEllipse(
-	//	int(points2[1].x),
-	//	int(points2[1].y),
-	//	10, 10, 0.0f, RED, kFillModeSolid);
-	//
-	////頂点3
-	//Novice::DrawEllipse(
-	//	int(points2[2].x),
-	//	int(points2[2].y),
-	//	10, 10, 0.0f, BLUE, kFillModeSolid);
-	//
-	////頂点4
-	//Novice::DrawEllipse(
-	//	int(points2[3].x),
-	//	int(points2[3].y),
-	//	10, 10, 0.0f, GREEN, kFillModeSolid);
-
-
-	////Center
-	//Novice::DrawEllipse(
-	//	int(planeNormalDebug.x), 
-	//	int(planeNormalDebug.y), 
-	//	20, 20, 0.0f, BLACK, kFillModeSolid);
-
-#pragma endregion
-
 
 
 
 }
 
+void DrawSegment(const Segment& segment,const Matrix4x4& viewMatrix,const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix,unsigned int color ) {
+	
+	//引数はローカル
+	Vector3 localSegmentOrigin = segment.origin;
+	Vector3 localSegmentDiff = segment.diff;
+
+
+	//ワールド
+	Matrix4x4 worldSegmentOrigin = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localSegmentOrigin);
+	Matrix4x4 worldSegmentDiff = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localSegmentDiff);
+
+
+	Matrix4x4 worldViewProjectionSegmentOrigin = Multiply(worldSegmentOrigin, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionSegmentDiff = Multiply(worldSegmentDiff, Multiply(viewMatrix, viewProjectionMatrix));
+	
+
+	Vector3 ndcSegmentOrigin = Transform(localSegmentOrigin, worldViewProjectionSegmentOrigin);
+	Vector3 ndcSegmentDiff = Transform(localSegmentDiff, worldViewProjectionSegmentDiff);
+
+
+	
+	Vector3 screenSegmentOrigin = Transform(ndcSegmentOrigin , viewportMatrix);
+	Vector3 screenSegmentDiff = Transform(ndcSegmentDiff , viewportMatrix);
+
+
+	Novice::DrawLine(
+		int(screenSegmentOrigin.x), 
+		int(screenSegmentOrigin.y), 
+		int(screenSegmentDiff.x), 
+		int(screenSegmentDiff.y), color);
+
+
+}
+
+
+
+//線と平面の衝突判定
+bool IsColliionPlaneSegment(const Segment& segment, const Plane& plane) {
+	//tを求めたいんですよね・・
+
+	//t=にしてあげると
+	//o・n+tb・n=d
+	//tb・n=d-o・n
+	//t=d-o・n
+	//  b・n
+
+
+
+
+	//資料ではaで衝突している
+	//a=o+tb
+
+	Vector3 o = segment.origin;
+	Vector3 b = segment.diff;
+	float d = plane.distance;
+	Vector3 n = Normalize(plane.normal);
+	
+
+	float bn = DotVector3(b, n);
+
+	//平行だったので✕
+	if (bn == 0.0f) {
+		return false;
+	}
+
+
+	//tを求める
+	float t = (d - DotVector3(o, n)) / bn;
+
+	//Segmentなので
+	if (t > 0.0f ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+
+
+}
 
 
 

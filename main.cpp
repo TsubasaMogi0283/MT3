@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//カメラ
 	//Vector3 cameraPosition = { 0.0f,0.0f,-1.0f };
-	Vector3 cameraTranslate = { 0.0f,0.0f,-9.50f };
+	Vector3 cameraTranslate = { 0.0f,0.8f,-9.50f };
 	Vector3 cameraRotate = { 0.0f,0.0f,0.0f };
 
 
@@ -36,10 +36,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	LocalVertics[1] = {0.2f,0.0f,0.0f};
 	
 
-	unsigned int sphrecolor = WHITE;
+	unsigned int segmentColor = WHITE;
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
 	
 	Plane planeCoodinate = { {0.0f,1.0f,0.001f},0.0f };
+	Segment segment = { {0.45f,0.78f,0.0f},{1.0f,0.58f,0.0f} };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -53,19 +54,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-
-
-		//レンダリングパイプライン(グラフィックスパイプライン)の流れ
-		//      
-		//ローカル座標系
-		//      ↓
-		//ワールド座標系
-		//      ↓
-		//ビュー座標系
-		//      ↓
-		//正規化デバイス座標系
-		//      ↓
-		//スクリーン座標系
 
 		
 #pragma region カメラの計算
@@ -85,38 +73,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		
-#pragma region 球
-
-
-		Matrix4x4 worldMatrixStartSphere = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, sphere1LocalCoodinate.center);
-		
-
-		Matrix4x4 worldViewProjectionMatrixStartSphere = Multiply(worldMatrixStartSphere, Multiply(viewMatrix, projectionMatrix));
-		
-
-		Vector3 ndcVerticesStartSphere = Transform(sphere1LocalCoodinate.center,worldViewProjectionMatrixStartSphere );
-		
-
-		Vector3 screenVerticesStartSphere= Transform(ndcVerticesStartSphere, viewportMatrix);
-		
-
-#pragma endregion
-
-		//平面用
-		Matrix4x4 worldMatrixPlane = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, planeCoodinate.normal);
-		
 
 		
-		if (IsCollisionSpherePlane(sphere1LocalCoodinate,planeCoodinate)==true) {
-			sphrecolor = RED;
+		if (IsColliionPlaneSegment(segment,planeCoodinate)==true) {
+			segmentColor = RED;
 		}
 		else{
-			sphrecolor = WHITE;
+			segmentColor = WHITE;
 		}
 
 
-		//ImGui::DragFloat3("Plane.Normal", &planeCoodinate.normal.x, 0.01f);
-		//planeCoodinate.normal = Normalize(planeCoodinate.normal);
 		
 		///
 		/// ↑更新処理ここまで
@@ -133,22 +99,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-
-		//Proj
-		//Localを入れるよ
-		DrawSphere({ sphere1LocalCoodinate}, viewMatrix, projectionMatrix, viewportMatrix, sphrecolor);
-		
 		DrawPlane(planeCoodinate,viewMatrix, projectionMatrix, viewportMatrix, WHITE);
-		//Debug用
-		//Novice::DrawEllipse(int(screenVerticesStartSphere.x), int(screenVerticesStartSphere.y), 30, 30, 0.0f, BLUE,kFillModeSolid);
+		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, segmentColor);
 
-		ImGui::Begin("Sphere");
-		ImGui::DragFloat3("Sphere1", &sphere1LocalCoodinate.center.x,0.01f);
-		ImGui::DragFloat("Sphere1Radius", &sphere1LocalCoodinate.radius, 0.01f);
-		ImGui::SliderFloat3("Sphere1Center", &sphere1LocalCoodinate.center.x, -2.0f, 2.0f);
-		ImGui::SliderFloat("Sphere1Radius", &sphere1LocalCoodinate.radius, 0.0f, 0.5f);
-		
-		ImGui::End();
+
 
 
 
@@ -159,7 +113,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::End();
 
 
-
+		ImGui::Begin("Segment");
+		ImGui::DragFloat3("Origin", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("Diff", &segment.diff.x, 0.01f);
+		ImGui::End();
 
 
 		ImGui::Begin("Camera");
