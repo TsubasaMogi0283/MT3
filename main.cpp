@@ -103,7 +103,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
-		DrawAABB(aabb1, viewMatrix,projectionMatrix, viewportMatrix, RED);
+		//1個目
+		DrawAABB(aabb1, viewMatrix,projectionMatrix, viewportMatrix, WHITE);
+		//2個目
+		DrawAABB(aabb2, viewMatrix,projectionMatrix, viewportMatrix, WHITE);
 		
 
 		//Proj
