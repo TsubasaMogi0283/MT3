@@ -35,10 +35,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	LocalVertics[0] = {-0.2f,0.0f,0.0f};
 	LocalVertics[1] = {0.2f,0.0f,0.0f};
 	
-
-	unsigned int segmentColor = WHITE;
+	unsigned int color = WHITE;
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
 	
+	Plane plane = { 1.0f,1.0f };
 	Segment segment = { {0.45f,0.78f,0.0f},{1.0f,0.58f,0.0f} };
 
 	//左下、上、右下
@@ -90,12 +90,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
+		DrawPlane(plane, viewMatrix, projectionMatrix, viewportMatrix, color);
 
-		DrawPlane()
-
-		DrawTriangle(triangle, viewMatrix, projectionMatrix, viewportMatrix, WHITE);
+		DrawTriangle(triangle, viewMatrix, projectionMatrix, viewportMatrix, color);
 		
-		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, segmentColor);
+		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, color);
 
 
 
