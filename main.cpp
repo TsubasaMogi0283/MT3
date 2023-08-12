@@ -43,7 +43,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	AABB aabb1 = { .min{-0.5f,-0.5f,-0.5f},.max{0.0f,0.0f,0.1f} };
 	AABB aabb2 = { .min{-0.2f,-0.2f,-0.2f},.max{1.0f,1.0f,1.0f} };
-
+	unsigned int color = WHITE;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -87,6 +87,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
+		if (IsCollisionAABB(aabb1, aabb2) == true) {
+			color = RED;
+		}
+		else {
+			color = WHITE;
+		}
+
 
 		///
 		/// ↑更新処理ここまで
@@ -104,9 +111,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
 		//1個目
-		DrawAABB(aabb1, viewMatrix,projectionMatrix, viewportMatrix, WHITE);
+		DrawAABB(aabb1, viewMatrix,projectionMatrix, viewportMatrix, color);
 		//2個目
-		DrawAABB(aabb2, viewMatrix,projectionMatrix, viewportMatrix, WHITE);
+		DrawAABB(aabb2, viewMatrix,projectionMatrix, viewportMatrix, color);
 		
 
 		//Proj
