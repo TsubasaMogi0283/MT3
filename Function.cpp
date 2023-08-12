@@ -7,6 +7,7 @@
 
 #include <Vector2.h>
 #include <imgui.h>
+#include <algorithm>
 
 Vector3 Add(const Vector3 m1, const Vector3 m2) {
 	Vector3 result = {
