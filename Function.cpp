@@ -1181,34 +1181,184 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix,const Mat
 void DrawAABB(const AABB& aabb,const Matrix4x4& viewMatrix,  const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int  color) {
 
 
-	//ab,acに引くよ！
-	//SRTだから最後のTは移動ね
-	Matrix4x4 worldMatrixMax = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },aabb.max);
-	Matrix4x4 worldMatrixMin = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },aabb.min);
-
-
 	
 
+	//ローカル座標
+	//手前 
+	//左上
+	Vector3 localFrontLeftTop = { aabb.min.x, aabb.max.y, aabb.min.z };
+	//右上
+	Vector3 localFrontRightTop = { aabb.max.x,aabb.max.y,aabb.min.z };
+	//左下
+	Vector3 loaclFrontLeftBottom = { aabb.min.x,aabb.min.y,aabb.min.z };
+	//右下
+	Vector3 localFrontRightBottom = { aabb.max.x,aabb.min.y,aabb.min.z };
 
-	////ワールドへ
-	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-	Matrix4x4 worldViewProjectionMatrixMax = Multiply(worldMatrixMax, Multiply(viewMatrix, viewProjectionMatrix));
-	Matrix4x4 worldViewProjectionMatrixMin = Multiply(worldMatrixMin, Multiply(viewMatrix, viewProjectionMatrix));
+	//奥
+	//左上
+	Vector3 localBackLeftTop = { aabb.min.x,aabb.max.y,aabb.max.z };
+	//右上
+	Vector3 localBackRightTop = { aabb.max.x,aabb.max.y,aabb.max.z };
+	//左下
+	Vector3 loaclBackLeftBottom = { aabb.min.x,aabb.min.y,aabb.max.z };
+	//右下
+	Vector3 localBackRightBottom = { aabb.max.x,aabb.min.y,aabb.max.z };
+
+	//Matrix4x4 worldMatrixMax = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },aabb.max);
+	//Matrix4x4 worldMatrixMin = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },aabb.min);
+
+
+#pragma region ワールド座標
+	//FrontとBackで分けたい
+	//手前から時計回り
+	
+	//手前
+	//左上
+	Matrix4x4 worldFrontLeftTop = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, localFrontLeftTop);
+	//右上
+	Matrix4x4 worldFrontRightTop = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },localFrontRightTop);
+	//左下
+	Matrix4x4 worldFrontLeftBottom = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },loaclFrontLeftBottom);
+	//右下
+	Matrix4x4 worldFrontRightBottom = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },localFrontRightBottom);
+
+
+	//奥
+	//左上
+	Matrix4x4 worldBackLeftTop = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },localBackLeftTop );
+	//右上
+	Matrix4x4 worldBackRightTop = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, localBackRightTop);
+	//左下
+	Matrix4x4 worldBackLeftBottom = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, loaclBackLeftBottom);
+	//右下
+	Matrix4x4 worldBackRightBottom = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, localBackRightBottom);
+#pragma endregion
+
+
+#pragma region WVP
+
+	//手前
+	//左上
+	Matrix4x4 worldViewProjectionFrontLeftTopMatrix = Multiply(worldFrontLeftTop, Multiply(viewMatrix, viewProjectionMatrix));
+	//右上
+	Matrix4x4 worldViewProjectionFrontRightTopMatrix = Multiply(worldFrontRightTop, Multiply(viewMatrix, viewProjectionMatrix));
+	//左下
+	Matrix4x4 worldViewProjectionFrontLeftBottomMatrix = Multiply(worldFrontLeftBottom, Multiply(viewMatrix, viewProjectionMatrix));
+	//右下
+	Matrix4x4 worldViewProjectionFrontRightBottomMatrix = Multiply(worldFrontRightBottom, Multiply(viewMatrix, viewProjectionMatrix));
+
+	//奥
+	//左上
+	Matrix4x4 worldViewProjectionBackLeftTopMatrix = Multiply(worldBackLeftTop, Multiply(viewMatrix, viewProjectionMatrix));
+	//右上
+	Matrix4x4 worldViewProjectionBackRightTopMatrix = Multiply(worldBackRightTop, Multiply(viewMatrix, viewProjectionMatrix));
+	//左下
+	Matrix4x4 worldViewProjectionBackLeftBottomMatrix = Multiply(worldBackLeftBottom, Multiply(viewMatrix, viewProjectionMatrix));
+	//右下
+	Matrix4x4 worldViewProjectionBackRightBottomMatrix = Multiply(worldBackRightBottom, Multiply(viewMatrix, viewProjectionMatrix));
+
+
+#pragma endregion
+
+	//Vector3 ndcMax = Transform(aabb.max, worldViewProjectionMatrixMax);
+	//Vector3 ndcMin = Transform(aabb.min, worldViewProjectionMatrixMin);
+	
+#pragma region 正規化
+
+	//手前
+	//左上
+	Vector3 ndcFrontLeftTop = Transform(localFrontLeftTop, worldViewProjectionFrontLeftTopMatrix);
+	//右上
+	Vector3 ndcFrontRightTop = Transform(localFrontRightTop, worldViewProjectionFrontRightTopMatrix);
+	//左下
+	Vector3 ndcFrontLeftBottom = Transform(loaclFrontLeftBottom, worldViewProjectionFrontLeftBottomMatrix);
+	//右下
+	Vector3 ndcFrontRightBottom = Transform(localFrontRightBottom, worldViewProjectionFrontRightBottomMatrix);
+
+	//奥
+	//左上
+	Vector3 ndcBackLeftTop = Transform(localBackLeftTop, worldViewProjectionBackLeftTopMatrix);
+	//右上
+	Vector3 ndcBackRightTop = Transform(localBackRightTop, worldViewProjectionBackRightTopMatrix);
+	//左下
+	Vector3 ndcBackLeftBottom = Transform(loaclBackLeftBottom, worldViewProjectionBackLeftBottomMatrix);
+	//右下
+	Vector3 ndcBackRightBottom = Transform(localBackRightBottom, worldViewProjectionBackRightBottomMatrix);
+
+
+#pragma endregion
+
+
+	//Vector3 screenMax = Transform(ndcMax, viewportMatrix);
+	//Vector3 screenMin = Transform(ndcMin, viewportMatrix);
+
+
+#pragma region スクリーン
+
+	//手前
+	//左上
+	Vector3 screenFrontLeftTop = Transform(ndcFrontLeftTop, viewportMatrix);
+	//右上
+	Vector3 screenFrontRightTop = Transform(ndcFrontRightTop, viewportMatrix);
+	//左下
+	Vector3 screenFrontLeftBottom = Transform(ndcFrontLeftBottom, viewportMatrix);
+	//右下
+	Vector3 screenFrontRightBottom = Transform(ndcFrontRightBottom, viewportMatrix);
+
+	//奥
+	//左上
+	Vector3 screenBackLeftTop = Transform(ndcBackLeftTop, viewportMatrix);
+	//右上
+	Vector3 screenBackRightTop = Transform(ndcBackRightTop, viewportMatrix);
+	//左下
+	Vector3 screenBackLeftBottom = Transform(ndcBackLeftBottom, viewportMatrix);
+	//右下
+	Vector3 screenBackRightBottom = Transform(ndcBackRightBottom, viewportMatrix);
+
+
+
+
+#pragma endregion
+
+
+	//描画
+	//手前
+	//上
+	Novice::DrawLine(int(screenFrontLeftTop.x), int(screenFrontLeftTop.y), int(screenFrontRightTop.x), int(screenFrontRightTop.y), color);
+	//右
+	Novice::DrawLine(int(screenFrontRightTop.x), int(screenFrontRightTop.y), int(screenFrontRightBottom.x), int(screenFrontRightBottom.y), color);
+	//下
+	Novice::DrawLine(int(screenFrontRightBottom.x), int(screenFrontRightBottom.y), int(screenFrontLeftBottom.x), int(screenFrontLeftBottom.y), color);
+	//左
+	Novice::DrawLine(int(screenFrontLeftBottom.x), int(screenFrontLeftBottom.y), int(screenFrontLeftTop.x), int(screenFrontLeftTop.y), color);
 	
 
+	//右側
+	//縦方向はいらない
+	//上
+	Novice::DrawLine(int(screenFrontRightTop.x), int(screenFrontRightTop.y), int(screenBackRightTop.x), int(screenBackRightTop.y), color);
+	//下
+	Novice::DrawLine(int(screenFrontRightBottom.x), int(screenFrontRightBottom.y), int(screenBackRightBottom.x), int(screenBackRightBottom.y), color);
 
 
-	Vector3 ndcMax = Transform(aabb.max, worldViewProjectionMatrixMax);
-	Vector3 ndcMin = Transform(aabb.min, worldViewProjectionMatrixMin);
+	//奥
+	//上
+	Novice::DrawLine(int(screenBackLeftTop.x), int(screenBackLeftTop.y), int(screenBackRightTop.x), int(screenBackRightTop.y), color);
+	//右
+	Novice::DrawLine(int(screenBackRightTop.x), int(screenBackRightTop.y), int(screenBackRightBottom.x), int(screenBackRightBottom.y), color);
+	//下
+	Novice::DrawLine(int(screenBackRightBottom.x), int(screenBackRightBottom.y), int(screenBackLeftBottom.x), int(screenBackLeftBottom.y), color);
+	//左
+	Novice::DrawLine(int(screenBackLeftBottom.x), int(screenBackLeftBottom.y), int(screenBackLeftTop.x), int(screenBackLeftTop.y), color);
 	
 
+	//左側
+	//縦方向はいらない
+	//上
+	Novice::DrawLine(int(screenFrontLeftTop.x), int(screenFrontLeftTop.y), int(screenBackLeftTop.x), int(screenBackLeftTop.y), color);
+	//下
+	Novice::DrawLine(int(screenFrontLeftBottom.x), int(screenFrontLeftBottom.y), int(screenBackLeftBottom.x), int(screenBackLeftBottom.y), color);
 
-	Vector3 screenMax = Transform(ndcMax, viewportMatrix);
-	Vector3 screenMin = Transform(ndcMin, viewportMatrix);
-
-
-
-	Novice::DrawLine(int(screenMax.x), int(screenMax.y), int(screenMin.x), int(screenMin.y), color);
 
 
 }
