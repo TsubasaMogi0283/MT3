@@ -87,13 +87,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
-		if (IsCollisionAABB(aabb1, aabb2) == true) {
+		if (IsCollisionSphereAndAABB(sphere1LocalCoodinate, aabb1) == true) {
 			color = RED;
 		}
 		else {
 			color = WHITE;
 		}
-
 
 		///
 		/// ↑更新処理ここまで
@@ -110,14 +109,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
 
+		//球
 		DrawSphere(sphere1LocalCoodinate, viewMatrix, projectionMatrix, viewportMatrix, color);
 
 		//1個目
 		DrawAABB(aabb1, viewMatrix,projectionMatrix, viewportMatrix, color);
-		//2個目
-		DrawAABB(aabb2, viewMatrix,projectionMatrix, viewportMatrix, color);
 		
-
 		//Proj
 		//Localを入れるよ
 		
@@ -125,10 +122,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("aabb1Max", &aabb1.max.x, 0.01f);
 		ImGui::DragFloat3("aabb1Min", &aabb1.min.x, 0.01f);
 
-		ImGui::DragFloat3("aabb2Max", &aabb2.max.x, 0.01f);
-		ImGui::DragFloat3("aabb2Min", &aabb2.min.x, 0.01f);
-
 		ImGui::End();
+
+
+
+
+		ImGui::Begin("Sphere");
+		ImGui::DragFloat3("center", &sphere1LocalCoodinate.center.x, 0.01f);
+		ImGui::DragFloat("radius", &sphere1LocalCoodinate.radius, 0.01f);
+		ImGui::End();
+
+
+
 
 
 

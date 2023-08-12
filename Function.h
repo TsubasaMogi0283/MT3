@@ -98,3 +98,5 @@ void DrawPlane(const Plane plane,const Matrix4x4& viewProjectionMatrix, const Ma
 void DrawAABB(const AABB& aabb,const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
 
 bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2);
+
+bool IsCollisionSphereAndAABB(const Sphere& sphere, const AABB& aabb);

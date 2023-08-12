@@ -1379,6 +1379,26 @@ bool IsCollisionAABB(const AABB& aabb1, const AABB& aabb2) {
 
 }
 
+bool IsCollisionSphereAndAABB(const Sphere& sphere, const AABB& aabb) {
+	//最近接点を求める
+	const Vector3 closestPoint={
+		std::clamp(sphere.center.x,aabb.min.x,aabb.max.x),
+		std::clamp(sphere.center.y,aabb.min.y,aabb.max.y),
+	std::clamp(sphere.center.z,aabb.min.z,aabb.max.z), };
+
+	//最近接点と球の中心と距離を求める
+	float distance = Length(Subtract(closestPoint , sphere.center));
+	//距離が半径より小さければ衝突
+	if (distance <= sphere.radius) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+
+}
+
 
 //ImGUiの方が便利だと思えてきたので消したい・・
 #pragma region Printf
