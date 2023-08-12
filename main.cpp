@@ -96,7 +96,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, color);
 
-
+		ImGui::Begin("Plane");
+		ImGui::
 
 
 
