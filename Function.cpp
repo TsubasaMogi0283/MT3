@@ -1290,10 +1290,22 @@ bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& trian
 	Vector3 o = segment.origin;
 	Vector3 b = segment.diff;
 
+	Vector3 cross01 = Cross(v01, v1);
+	Vector3 cross12 = Cross(v12, v2);
+	Vector3 cross20 = Cross(v20, v0);
+
+
 
 	//クロス積を使うよ
-	//Vector3 cross01=Cross(triangle.vertices->x)
-
+	// 
+	if (DotVector3(cross01, normal) >= 0.0f &&
+		DotVector3(cross12, normal) >= 0.0f &&
+		DotVector3(cross20, normal) >= 0.0f){
+		return true;
+	}
+	else {
+		return false;
+	}
 
 }
 
