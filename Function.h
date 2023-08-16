@@ -10,11 +10,7 @@ const int WINDOW_SIZE_HEIGHT = 720;
 Vector3 Add(const Vector3 m1, const Vector3 m2);
 Vector3 Subtract(const Vector3 m1, const Vector3 m2);
 
-
-
-
-
-
+Vector3 Vector3Multiply(const Vector3 v1, const Vector3 v2);
 
 
 //Scale
@@ -70,8 +66,6 @@ void DrawSphere(const Sphere& sphere,const Matrix4x4& viewMatrix, const Matrix4x
 
 
 
-
-
 float Clamp(float t, float min, float max);
 
 
@@ -87,6 +81,26 @@ Vector3 Project(const Vector3 v1, const Vector3 v2);
 
 Vector3 ClosestPoint(const Vector3 point, const Segment segment);
 
+bool IsCollision(const Sphere s1, Sphere s2);
+
+bool IsCollisionSpherePlane(const Sphere s1, Plane plane);
+
+Vector3 Perpendicular(const Vector3 vector);
+
+
+void DrawPlane(const Plane plane,const Matrix4x4& viewMatrix,const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
+
+
+//線と平面の衝突判定
+bool IsColliionPlaneSegment(const Segment& segment, const Plane& plane);
+
+//線分の描画
+void DrawSegment(const Segment& segment, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
+
+//三角形の描画
 void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color);
-bool IsCollisionTriangleAndLine(const Triangle triangle, const Segment);
+
+//三角形と線分の当たる判定
+bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& triangle);
+
 
