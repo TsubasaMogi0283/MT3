@@ -30,6 +30,10 @@ Vector3 Subtract(const Vector3 m1, const Vector3 m2) {
 
 }
 
+Vector3 Vector3Multiply(const Vector3 v1, const Vector3 v2) {
+	Vector3 result = {v1.x*v2.x,v1.y*v2.y,v1.z*v2.z};
+	return result;
+}
 
 //Scale
 Matrix4x4 MakeScaleMatrix(const Vector3 scale) {
@@ -742,10 +746,6 @@ void DrawSphere(
 
 
 
-
-	Vector3 ndcVerticesA = {};
-	Vector3 ndcVerticesB = {};
-	Vector3 ndcVerticesC = {};
 	Vector3 ndcVerticesCenter = {};
 
 
@@ -782,9 +782,6 @@ void DrawSphere(
 			//abがxy平面(theta,lat)
 			Vector3 a, b, c;
 			
-			Vector3 HalfCircleStart,HalfCircleEnd;
-			Vector3 HarfCircleXYStart, HarfCircleXYEnd;
-
 
 			//Local
 			a = {sphere.radius*(cosf(lat) * cosf(lon)),
@@ -806,12 +803,13 @@ void DrawSphere(
 
 
 			//ab,acに引くよ！
-			Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },Add(a,sphere.center));
-			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},Add(b,sphere.center) );
-			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},Add(c,sphere.center));
+			//SRTだから最後のTは移動ね
+			Matrix4x4 WorldMatrixA = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f },sphere.center);
+			Matrix4x4 WorldMatrixB = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},sphere.center );
+			Matrix4x4 WorldMatrixC = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},sphere.center);
 
 
-			
+
 
 
 			////ワールドへ
@@ -820,19 +818,22 @@ void DrawSphere(
 			Matrix4x4 worldViewProjectionMatrixB = Multiply(WorldMatrixB, Multiply(viewMatrix, viewProjectionMatrix));
 			Matrix4x4 worldViewProjectionMatrixC = Multiply(WorldMatrixC, Multiply(viewMatrix, viewProjectionMatrix));
 			
-
-
-
-			ndcVerticesA = Transform(Add(a,sphere.center), worldViewProjectionMatrixA);
-			ndcVerticesB = Transform(Add(b,sphere.center), worldViewProjectionMatrixB);
-			ndcVerticesC = Transform(Add(c,sphere.center), worldViewProjectionMatrixC);
 			
 
+
+			Vector3 ndcVerticesA = Transform(a, worldViewProjectionMatrixA);
+			Vector3 ndcVerticesB = Transform(b, worldViewProjectionMatrixB);
+			Vector3 ndcVerticesC = Transform(c, worldViewProjectionMatrixC);
+			
+			Vector3 centerPositionNBC = Transform(sphere.center, worldViewProjectionMatrixA);
 
 			screenVerticesA[latIndex] = Transform(ndcVerticesA, viewportMatrix);
 			screenVerticesB[latIndex] = Transform(ndcVerticesB, viewportMatrix);
 			screenVerticesC[latIndex] = Transform(ndcVerticesC, viewportMatrix);
 
+			Vector3 screenCenter = Transform(centerPositionNBC, viewportMatrix);
+
+			//Novice::DrawEllipse(int(screenCenter.x), int(screenCenter.y), 30, 30, 0.0f, colour, kFillModeSolid);
 
 			//ab
 			Novice::DrawLine(
@@ -849,96 +850,6 @@ void DrawSphere(
 				int(screenVerticesC[latIndex].y), colour);
 			
 
-
-
-
-#pragma region 平面で考えたやつ
-
-
-			//xz
-			HalfCircleStart = {
-				sphere.radius * (cosf(lon)),
-				0.0f,
-				sphere.radius * (sinf(lon)) 
-			};
-
-			HalfCircleEnd = {
-				sphere.radius * (cosf(lon+phiD)),
-				0.0f,
-				sphere.radius * (sinf(lon+phiD))
-			};
-
-			//theta
-			HarfCircleXYStart = {
-				sphere.radius * (cosf(lat)),
-				sphere.radius * (sinf(lat)) ,
-				0.0f,
-				
-			};
-			HarfCircleXYEnd= {
-				sphere.radius * (cosf(lat+thetaD)),
-				sphere.radius * (sinf(lat+thetaD)),
-				0.0f,
-				 
-			};
-
-			Matrix4x4 WorldMatrixCircleStart = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleStart );
-			Matrix4x4 WorldMatrixCircleEnd = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HalfCircleEnd );
-
-			Matrix4x4 WorldMatrixCircleStartXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYStart );
-			Matrix4x4 WorldMatrixCircleEndXY = MakeAffineMatrix( {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},HarfCircleXYEnd );
-
-		
-			
-
-
-			
-
-			Matrix4x4 worldViewProjectionMatrixCircleStart = Multiply(WorldMatrixCircleStart, Multiply(viewMatrix, viewProjectionMatrix));
-			Matrix4x4 worldViewProjectionMatrixCircleEnd = Multiply(WorldMatrixCircleEnd, Multiply(viewMatrix, viewProjectionMatrix));
-			
-			Matrix4x4 worldViewProjectionMatrixCircleStartXY = Multiply(WorldMatrixCircleStartXY, Multiply(viewMatrix, viewProjectionMatrix));
-			Matrix4x4 worldViewProjectionMatrixCircleEndXY = Multiply(WorldMatrixCircleEndXY, Multiply(viewMatrix, viewProjectionMatrix));
-			
-
-
-
-
-
-
-			ndcVerticesStart = Transform(HalfCircleStart, worldViewProjectionMatrixCircleStart);
-			ndcVerticesEnd= Transform(HalfCircleEnd, worldViewProjectionMatrixCircleEnd);
-
-			ndcVerticesXYStart = Transform(HarfCircleXYStart, worldViewProjectionMatrixCircleStartXY);
-			ndcVerticesXYEnd= Transform(HarfCircleXYEnd, worldViewProjectionMatrixCircleEndXY);
-
-
-
-			screenVerticesStart[lonIndex] =Transform(ndcVerticesStart, viewportMatrix);
-			screenVerticesEnd[lonIndex] =Transform(ndcVerticesEnd, viewportMatrix);
-
-
-			screenVerticesXYStart[latIndex] =Transform(ndcVerticesXYStart, viewportMatrix);
-			screenVerticesXYEnd[latIndex] =Transform(ndcVerticesXYEnd, viewportMatrix);
-
-
-
-			////xz
-			//Novice::DrawLine(
-			//	int(screenVerticesStart[lonIndex].x), 
-			//	int(screenVerticesStart[lonIndex].y), 
-			//	int(screenVerticesEnd[lonIndex].x), 
-			//	int(screenVerticesEnd[lonIndex].y), colour);
-			//
-			////xy
-			//Novice::DrawLine(
-			//	int(screenVerticesXYStart[latIndex].x), 
-			//	int(screenVerticesXYStart[latIndex].y), 
-			//	int(screenVerticesXYEnd[latIndex].x), 
-			//	int(screenVerticesXYEnd[latIndex].y), colour);
-
-
-#pragma endregion
 
 
 
@@ -1064,6 +975,347 @@ Vector3 ClosestPoint(const Vector3 point, const Segment segment) {
 	return Vector3CP;
 }
 
+//Sphereの当たり判定
+bool IsCollision(const Sphere s1, Sphere s2) {
+	//2つの中心点間の距離を求める
+	float distance = Length(Subtract(s2.center,s1.center));
+
+	//いつものの仕組み
+	//当たっていたらtrue
+	if (distance < s1.radius + s2.radius) {
+		return true;
+	}
+	//当たってない場合はfalse
+	else{
+		return false;
+	}
+}
+
+
+
+
+//球と平面の当たり判定
+bool IsCollisionSpherePlane(const Sphere s1, Plane plane) {
+	//kを求めたいんですよね・・
+
+	//q=c-kn
+	////球の中心点
+	Vector3 c = s1.center;
+	
+	float d = plane.distance;
+
+	//単位ベクトル
+	Vector3 n = Normalize(plane.normal);
+
+	float k = abs(DotVector3(n, c) - d);
+	
+
+	if (k < s1.radius) {
+		return true;
+	}
+	else {
+		return false;
+	}
+	
+
+
+
+
+}
+
+Vector3 Perpendicular(const Vector3 vector) {
+	if (vector.x != 0.0f || vector.y != 0.0f) {
+		return { -vector.y, vector.x, 0.0f };
+	}
+	return { 0.0f,-vector.z,vector.y };
+}
+
+
+void DrawPlane(const Plane plane,const Matrix4x4& viewMatrix,const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix,unsigned int color) {
+	
+	//1.中心点を決める
+	Vector3 center = { 
+		plane.distance * plane.normal.x,
+		plane.distance * plane.normal.y,
+		plane.distance * plane.normal.z 
+	};
+
+	Vector3 perpendiculars[4];
+	//2.法線と垂直なベクトルを１つを決める
+	perpendiculars[0] = Normalize(Perpendicular(plane.normal));
+	//3.2の逆ベクトルを求める
+	perpendiculars[1] = { -perpendiculars[0].x,-perpendiculars[0].y,-perpendiculars[0].z };
+	//4.2と法線のクロス積を求める
+	perpendiculars[2] = Cross(plane.normal,perpendiculars[0]);
+	//5.4の逆ベクトルを求める
+	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };
+	
+
+	
+	//6.2-5のベクトルを中心点にそれぞれ定数倍して足すと4頂点が出来上がる
+	//Vector3 points[4] = {};
+	Vector3 extend[4] = {};
+	Vector3 point[4] = {};
+	//Vector3 points2[4] = {};
+
+	Matrix4x4 worldPoints[4] = {};
+	Matrix4x4 worldViewProjectionPoints[4] = {};
+
+	Vector3 ndcPoints[4] = {};
+	Vector3 screenPoints[4] = {};
+
+	for (int32_t index = 0; index < 4; ++index) {
+		extend[index] = {
+			2.0f * perpendiculars[index].x,
+			2.0f * perpendiculars[index].y,
+			2.0f * perpendiculars[index].z 
+		};
+		point[index] = Add(center, extend[index]);
+		
+
+
+
+		//points2[index] = Transform(Transform(point[index], viewProjectionMatrix), viewportMatrix);
+
+		//ab,acに引くよ！
+		//SRTだから最後のTは移動ね
+		worldPoints[index] = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, point[index]);
+
+		////ワールドへ
+		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+		worldViewProjectionPoints [index] = Multiply(worldPoints[index], Multiply(viewMatrix, viewProjectionMatrix));
+		
+
+		ndcPoints[index] = Transform(point[index], worldViewProjectionPoints[index]);
+			
+		screenPoints[index] = Transform(ndcPoints[index] , viewportMatrix);
+
+
+
+		
+	}
+
+
+
+
+#pragma region 点をつなぎ合わせる
+
+	const float offset = 0.0f;
+
+	//WhiteToBlue
+	Novice::DrawLine(
+		int(screenPoints[0].x), 
+		int(screenPoints[0].y+offset), 
+		int(screenPoints[2].x), 
+		int(screenPoints[2].y+offset), color);
+	
+	//BlueToRed
+	Novice::DrawLine(
+		int(screenPoints[2].x), 
+		int(screenPoints[2].y+offset), 
+		int(screenPoints[1].x), 
+		int(screenPoints[1].y+offset), color);
+	
+	//RedToGreen
+	Novice::DrawLine(
+		int(screenPoints[1].x), 
+		int(screenPoints[1].y+offset), 
+		int(screenPoints[3].x), 
+		int(screenPoints[3].y+offset), color);
+
+	//GreenWhite
+	Novice::DrawLine(
+		int(screenPoints[3].x), 
+		int(screenPoints[3].y+offset), 
+		int(screenPoints[0].x), 
+		int(screenPoints[0].y+offset), color);
+
+#pragma endregion
+
+
+
+
+}
+
+void DrawSegment(const Segment& segment,const Matrix4x4& viewMatrix,const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix,unsigned int color ) {
+	
+	//引数はローカル
+	Vector3 localSegmentOrigin = segment.origin;
+	Vector3 localSegmentDiff = segment.diff;
+
+
+	//ワールド
+	Matrix4x4 worldSegmentOrigin = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localSegmentOrigin);
+	Matrix4x4 worldSegmentDiff = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localSegmentDiff);
+
+
+	Matrix4x4 worldViewProjectionSegmentOrigin = Multiply(worldSegmentOrigin, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionSegmentDiff = Multiply(worldSegmentDiff, Multiply(viewMatrix, viewProjectionMatrix));
+	
+
+	Vector3 ndcSegmentOrigin = Transform(localSegmentOrigin, worldViewProjectionSegmentOrigin);
+	Vector3 ndcSegmentDiff = Transform(localSegmentDiff, worldViewProjectionSegmentDiff);
+
+
+	
+	Vector3 screenSegmentOrigin = Transform(ndcSegmentOrigin , viewportMatrix);
+	Vector3 screenSegmentDiff = Transform(ndcSegmentDiff , viewportMatrix);
+
+
+	Novice::DrawLine(
+		int(screenSegmentOrigin.x), 
+		int(screenSegmentOrigin.y), 
+		int(screenSegmentDiff.x), 
+		int(screenSegmentDiff.y), color);
+
+
+}
+
+
+
+//線と平面の衝突判定
+bool IsColliionPlaneSegment(const Segment& segment, const Plane& plane) {
+	//tを求めたいんですよね・・
+
+	//t=にしてあげると
+	//o・n+tb・n=d
+	//tb・n=d-o・n
+	//t=d-o・n
+	//  b・n
+
+
+
+
+	//資料ではaで衝突している
+	//a=o+tb
+
+	Vector3 o = segment.origin;
+	Vector3 b = segment.diff;
+	float d = plane.distance;
+	Vector3 n = Normalize(plane.normal);
+	
+
+	float bn = DotVector3(b, n);
+
+	//平行だったので✕
+	if (bn == 0.0f) {
+		return false;
+	}
+
+
+
+	//tを求める
+	float t = (d - DotVector3(o, n)) / bn;
+
+	//Segmentなので
+	if (t > 0.0f ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+
+
+}
+
+
+
+
+
+//三角形の描画
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
+
+	Vector3 localv1 = triangle.vertex1;
+	Vector3 localv2 = triangle.vertex2;
+	Vector3 localv3 = triangle.vertex3;
+
+	//ワールド
+	Matrix4x4 worldv1 = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localv1);
+	Matrix4x4 worldv2 = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localv2);
+	Matrix4x4 worldv3 = MakeAffineMatrix({1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, localv3);
+
+
+
+
+	Matrix4x4 worldViewProjectionv1 = Multiply(worldv1, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionv2 = Multiply(worldv2, Multiply(viewMatrix, viewProjectionMatrix));
+	Matrix4x4 worldViewProjectionv3 = Multiply(worldv3, Multiply(viewMatrix, viewProjectionMatrix));
+	
+
+
+
+	Vector3 ndcv1 = Transform(localv1, worldViewProjectionv1);
+	Vector3 ndcv2 = Transform(localv2, worldViewProjectionv2);
+	Vector3 ndcv3 = Transform(localv3, worldViewProjectionv3);
+
+
+	
+	Vector3 screenv1 = Transform(ndcv1 , viewportMatrix);
+	Vector3 screenv2 = Transform(ndcv2 , viewportMatrix);
+	Vector3 screenv3 = Transform(ndcv3 , viewportMatrix);
+
+
+	Novice::DrawTriangle(
+		int(screenv1.x), 
+		int(screenv1.y), 
+		int(screenv2.x), 
+		int(screenv2.y), 
+		int(screenv3.x), 
+		int(screenv3.y), color, kFillModeWireFrame);
+
+
+}
+
+//三角形と線分の当たる判定
+bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& triangle) {
+
+	//資料通りだと上が0になっている
+	//違和感ある書き方だけど気にしないでね
+	//上
+	Vector3 v0 = triangle.vertex2;
+	//右
+	Vector3 v1 = triangle.vertex3;
+	//左
+	Vector3 v2 = triangle.vertex1;
+
+
+
+	//それぞれを結ぶ
+	Vector3 v01 = Subtract(v1, v0);
+	Vector3 v12 = Subtract(v2, v1);
+	Vector3 v20 = Subtract(v0, v2);
+
+
+	Vector3 o = segment.origin;
+	Vector3 b = segment.diff;
+
+	Vector3 cross01 = Cross(v01, v1);
+	Vector3 cross12 = Cross(v12, v2);
+	Vector3 cross20 = Cross(v20, v0);
+
+	//02_02より
+	Vector3 normal = Normalize(cross01);
+
+	
+
+	//クロス積を使うよ
+	if (DotVector3(cross01, normal) >= 0.0f &&
+		DotVector3(cross12, normal) >= 0.0f &&
+		DotVector3(cross20, normal) >= 0.0f){
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+
+
+
+//ImGUiの方が便利だと思えてきたので消したい・・
+#pragma region Printf
 
 void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* string) {
 	Novice::ScreenPrintf(x + COLUMN_WIDTH * 0, y, "%6.02f", vector.x);
@@ -1084,53 +1336,4 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4 matrix, const char* string
 	}
 }
 
-
-void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, unsigned int color) {
-
-#pragma region まず頂点を求める
-
-	//上
-	Matrix4x4 worldTriangleV0 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0 }, triangle.vertices0);
-	//右
-	Matrix4x4 worldTriangleV1 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0 }, triangle.vertices1);
-	//左
-	Matrix4x4 worldTriangleV2 = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0 }, triangle.vertices2);
-	
-
-
-	Matrix4x4 worldViewProjectionMatrixTriangleV0= Multiply(worldTriangleV0, Multiply(viewMatrix, viewProjectionMatrix));
-	Matrix4x4 worldViewProjectionMatrixTriangleV1= Multiply(worldTriangleV1, Multiply(viewMatrix, viewProjectionMatrix));
-	Matrix4x4 worldViewProjectionMatrixTriangleV2= Multiply(worldTriangleV2, Multiply(viewMatrix, viewProjectionMatrix));
-
-		
-	Vector3 ndcVerticesV0 = Transform(triangle.vertices0, worldViewProjectionMatrixTriangleV0);
-	Vector3 ndcVerticesV1 = Transform(triangle.vertices1, worldViewProjectionMatrixTriangleV1);
-	Vector3 ndcVerticesV2 = Transform(triangle.vertices2, worldViewProjectionMatrixTriangleV2);
-	
-	Vector3 screenVerticesV0 = Transform(ndcVerticesV0, viewportMatrix);
-	Vector3 screenVerticesV1 = Transform(ndcVerticesV1, viewportMatrix);
-	Vector3 screenVerticesV2 = Transform(ndcVerticesV2, viewportMatrix);
-		
-
 #pragma endregion
-
-
-
-	Novice::DrawTriangle(
-		int(screenVerticesV0.x), 
-		int(screenVerticesV0.y), 
-		int(screenVerticesV1.x), 
-		int(screenVerticesV1.y), 
-		int(screenVerticesV2.x), 
-		int(screenVerticesV2.y), color, kFillModeWireFrame);
-
-}
-
-
-
-
-
-//bool IsCollisionTriangleAndLine(const Triangle triangle, const Segment) {
-//	//Vector3 cross01=Cross(triangle.vertices[0],)
-//}
-
