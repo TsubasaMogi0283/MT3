@@ -3,6 +3,7 @@
 #include <Vector3.h>
 #include <cstdint>
 #include <imgui.h>
+#include <corecrt_math.h>
 
 const char kWindowTitle[] = "LE2B_26_モギ_ツバサ_MT3_01_02_確認課題";
 
@@ -25,13 +26,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//カメラ
 	//Vector3 cameraPosition = { 0.0f,0.0f,-1.0f };
-	Vector3 cameraTranslate = { 0.0f,1.9f,-6.49f };
-	Vector3 cameraRotate = { 0.26f,0.0f,0.0f };
+	Vector3 cameraTranslate = { 0.0f,3.5f,-9.50f };
+	Vector3 cameraRotate = { 0.30f,0.0f,0.0f };
 
-	//各3頂点
-	//上、右、左
-	Triangle tiangle1 = { {0.0f,0.5f,0.0f},{-0.5f,0.0f,0.0f},{0.5f,0.0f,0.0f} };
 
+	//ローカル
+	Vector3 LocalVertics[2] = {};
+	LocalVertics[0] = {-0.2f,0.0f,0.0f};
+	LocalVertics[1] = {0.2f,0.0f,0.0f};
+	
+	unsigned int color = WHITE;
+	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
+	
+	Plane plane = { 1.0f,1.0f };
+	Segment segment = { {0.45f,0.78f,0.0f},{1.0f,0.58f,0.0f} };
+
+	//左下、上、右下
+	Triangle triangle = { {-1.0f,0.0f,0.0f},{0.0f,1.0f,0.0f},{1.0f,0.0f,0.0f} };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -46,21 +57,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-
-		//レンダリングパイプライン(グラフィックスパイプライン)の流れ
-		//      
-		//ローカル座標系
-		//      ↓
-		//ワールド座標系
-		//      ↓
-		//ビュー座標系
-		//      ↓
-		//正規化デバイス座標系
-		//      ↓
-		//スクリーン座標系
-
-
-
+		
+#pragma region カメラの計算
 		//計算
 		Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
 		////ビュー(カメラ)
@@ -73,10 +71,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//ビューポート
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
 
+#pragma endregion
 
+		if (IsCollisionTriangleAndSegment(segment, triangle) == true) {
+			color = RED;
+		}
+		else {
+			color = false;
+		}
 
-
-
+		
 		///
 		/// ↑更新処理ここまで
 		///
@@ -88,10 +92,40 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
+
+		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
+	
+		DrawTriangle(triangle, viewMatrix, projectionMatrix, viewportMatrix, color);
+		
+		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, color);
 
 
-		DrawTriangle(tiangle1, viewMatrix, projectionMatrix, viewportMatrix, WHITE);
+
+
+		ImGui::Begin("Segment");
+		ImGui::DragFloat3("Origin", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("Diff", &segment.diff.x, 0.01f);
+		ImGui::End();
+
+		ImGui::Begin("Triangle");
+		ImGui::DragFloat3("v1", &triangle.vertex1.x, 0.01f);
+		ImGui::DragFloat3("v2", &triangle.vertex2.x, 0.01f);
+		ImGui::DragFloat3("v3", &triangle.vertex3.x, 0.01f);
+
+		ImGui::End();
+
+
+
+		ImGui::Begin("Camera");
+		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x,0.01f);
+		ImGui::DragFloat3("cameraRotate", &cameraRotate.x,0.01f);
+		
+		ImGui::End();
+
+
+
+		
 
 		///
 		/// ↑描画処理ここまで
