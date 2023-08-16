@@ -1115,6 +1115,7 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewMatrix, const M
 #pragma endregion
 
 
+
 	Novice::DrawTriangle(
 		int(screenVerticesV0.x), 
 		int(screenVerticesV0.y), 
