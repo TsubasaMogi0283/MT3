@@ -1,5 +1,10 @@
 #pragma once
-#include <Vector3.h>
+
+
+struct Sphere {
+	Vector3 center;
+	float radius;
+};
 
 //直線
 struct Line {
@@ -28,15 +33,17 @@ struct Segment {
 
 };
 
-struct Sphere {
-	Vector3 center;
-	float radius;
+struct Plane {
+	Vector3 normal; //法線
+	float distance; //距離
 };
 
-
+//三角形
 struct Triangle {
-	Vector3 vertices0;
-	Vector3 vertices1;
-	Vector3 vertices2;
+	Vector3 vertex1;
+	Vector3 vertex2;
+	Vector3 vertex3;
 
 };
+
+

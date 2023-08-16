@@ -26,8 +26,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//カメラ
 	//Vector3 cameraPosition = { 0.0f,0.0f,-1.0f };
-	Vector3 cameraTranslate = { 0.0f,3.5f,-9.50f };
-	Vector3 cameraRotate = { 0.30f,0.0f,0.0f };
+	Vector3 cameraTranslate = { -5.5f,2.8f,-6.2f };
+	Vector3 cameraRotate = { 0.30f,0.65f,0.0f };
 
 
 	//ローカル
@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Sphere sphere1LocalCoodinate = { {0.0f,0.0f,0.0f},0.2f };
 	
 	Plane plane = { 1.0f,1.0f };
-	Segment segment = { {0.45f,0.78f,0.0f},{1.0f,0.58f,0.0f} };
+	Segment segment = { {0.21f,0.0f,-1.0f},{0.35f,0.58f,1.0f} };
 
 	//左下、上、右下
 	Triangle triangle = { {-1.0f,0.0f,0.0f},{0.0f,1.0f,0.0f},{1.0f,0.0f,0.0f} };
