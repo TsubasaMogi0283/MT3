@@ -73,7 +73,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
-
+		if (IsCollisionTriangleAndSegment(segment, triangle) == true) {
+			color = RED;
+		}
+		else {
+			color = false;
+		}
 
 		
 		///
@@ -90,14 +95,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//Grid
 		DrawGrid(viewMatrix, projectionMatrix, viewportMatrix);
-		DrawPlane(plane, viewMatrix, projectionMatrix, viewportMatrix, color);
-
+	
 		DrawTriangle(triangle, viewMatrix, projectionMatrix, viewportMatrix, color);
 		
 		DrawSegment(segment,viewMatrix, projectionMatrix, viewportMatrix, color);
 
-		ImGui::Begin("Plane");
-		ImGui::
 
 
 

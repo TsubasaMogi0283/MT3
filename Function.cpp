@@ -1294,10 +1294,13 @@ bool IsCollisionTriangleAndSegment(const Segment& segment, const Triangle& trian
 	Vector3 cross12 = Cross(v12, v2);
 	Vector3 cross20 = Cross(v20, v0);
 
+	//02_02より
+	Vector3 normal = Normalize(cross01);
+
+	Novice::ScreenPrintf(0, 0, "normalize:[%f][%f][%f]", normal.x, normal.y, normal.z);
 
 
 	//クロス積を使うよ
-	// 
 	if (DotVector3(cross01, normal) >= 0.0f &&
 		DotVector3(cross12, normal) >= 0.0f &&
 		DotVector3(cross20, normal) >= 0.0f){
